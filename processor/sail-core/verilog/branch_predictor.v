@@ -34,8 +34,6 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 /*
  *		Branch Predictor FSM
  */

@@ -34,15 +34,11 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 /*
  *	Description:
  *
  *		This module implements the branch resolution, located in MEM stage
  */
-
-
 
 module branch_decision (Branch, Predicted, Branch_Enable, Jump, Mispredict, Decision, Branch_Jump_Trigger);
 	input	Branch;

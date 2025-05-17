@@ -1,7 +1,7 @@
 include /f-of-e-tools/tools/sunflower/conf/setup.conf
 
 TREEROOT = $(SUNFLOWERROOT)
-GB3_ROOT = /gb3-resources
+GB3_ROOT = /gb3-2505
 
 TARGET-ARCH	= riscv32-elf
 TARGET		= riscv

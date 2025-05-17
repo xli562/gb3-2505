@@ -34,12 +34,10 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 /*
  *	RISC-V CONTROL UNIT
  */
-module control(
+module control_unit(
 		opcode,
 		MemtoReg,
 		RegWrite,

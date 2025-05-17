@@ -16,7 +16,7 @@ v0x55a63237cb70_0 .net "Branch_Enable", 0 0, v0x55a63237c650_0;  1 drivers
 v0x55a63237cc60_0 .var "FuncCode", 3 0;
 v0x55a63237cd30_0 .var "Opcode", 6 0;
 v0x55a63237ce00_0 .var "clk", 0 0;
-S_0x55a63235bda0 .scope module, "aluCtrl_inst" "ALUControl" 2 15, 3 2 0, S_0x55a63235bc20;
+S_0x55a63235bda0 .scope module, "aluCtrl_inst" "alu_control" 2 15, 3 2 0, S_0x55a63235bc20;
  .timescale 0 0;
     .port_info 0 /INPUT 4 "FuncCode"
     .port_info 1 /OUTPUT 7 "ALUCtl"

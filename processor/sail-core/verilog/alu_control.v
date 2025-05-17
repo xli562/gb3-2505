@@ -34,12 +34,8 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 `include "../include/rv32i-defines.v"
 `include "../include/sail-core-defines.v"
-
-
 
 /*
  *	Description:
@@ -47,9 +43,7 @@
  *		This module implements the ALU control unit
  */
 
-
-
-module ALUControl(FuncCode, ALUCtl, Opcode);
+module alu_control(FuncCode, ALUCtl, Opcode);
 	input [3:0]		FuncCode;
 	input [6:0]		Opcode;
 	output reg [6:0]	ALUCtl;
@@ -68,16 +62,12 @@ module ALUControl(FuncCode, ALUCtl, Opcode);
 		ALUCtl = 7'b0;
 	end
 
-
-
 	/*
 	 *	TODO:
 	 *
 	 *	(1) Please replace the values being assigned to ALUCtl with the corresponding `defines in sail-core-defines.v
 	 *	(2) Please replace the FuncCode constants with the corresponding `defines in sail-core-defines.v
 	 */
-
-
 
 	always @(*) begin
 		case (Opcode)

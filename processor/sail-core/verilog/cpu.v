@@ -220,7 +220,7 @@ module cpu(
 	/*
 	 *	Decode Stage
 	 */
-	control control_unit(
+	control_unit control_unit_inst(
 			.opcode({if_id_out[38:32]}),
 			.MemtoReg(MemtoReg1),
 			.RegWrite(RegWrite1),
@@ -259,7 +259,7 @@ module cpu(
 			.imm(imm_out)
 		);
 
-	ALUControl alu_control(
+	alu_control alu_control(
 			.Opcode(if_id_out[38:32]),
 			.FuncCode({if_id_out[62], if_id_out[46:44]}),
 			.ALUCtl(alu_ctl)

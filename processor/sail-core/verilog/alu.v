@@ -34,20 +34,14 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 `include "../include/rv32i-defines.v"
 `include "../include/sail-core-defines.v"
-
-
 
 /*
  *	Description:
  *
  *		This module implements the ALU for the RV32I.
  */
-
-
 
 /*
  *	Not all instructions are fed to the ALU. As a result, the ALUctl

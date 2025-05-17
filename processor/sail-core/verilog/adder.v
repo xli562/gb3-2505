@@ -34,16 +34,12 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 /*
  *	Description:
  *
  *		This module implements an adder for use by the branch unit
  *		and program counter increment among other things.
  */
-
-
 
 module adder(input1, input2, out);
 	input [31:0]	input1;

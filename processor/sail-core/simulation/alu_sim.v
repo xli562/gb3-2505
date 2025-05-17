@@ -12,7 +12,7 @@ module ();
 	//alu aluctl interface
 	wire[6:0] AluCtl_wire;
 
-	ALUControl aluCtrl_inst(
+	alu_control aluCtrl_inst(
 		.FuncCode(FuncCode),
 		.ALUCtl(AluCtl_wire),
 		.Opcode(Opcode)
