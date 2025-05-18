@@ -24,7 +24,7 @@ Previous window: `^B ^P`
 
 Rename window: `^B ,`
 
-Enter scroll mode: `^B ]`
+Enter scroll mode: `^B [`
 
 Scroll: PgUp / PgDn
 
