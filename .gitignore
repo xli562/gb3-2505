@@ -3,6 +3,8 @@
 !*.*
 !*/
 
+*simlog.node0
+
 # allow Makefiles
 !**Makefile**
 !processor/verilog
