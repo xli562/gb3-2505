@@ -347,6 +347,11 @@
 
 /* Compiler and system dependent definitions: */
 
+#define TIME
+#ifndef HZ
+  #define HZ 60
+#endif
+
 #ifndef TIME
 #define TIMES
 #endif

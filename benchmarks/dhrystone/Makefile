@@ -1,69 +1,67 @@
-USE_MYSTDLIB = 0
-OBJS = dhry_1.o dhry_2.o stdlib.o
-CFLAGS = -MD -O3 -mabi=ilp32 -march=rv32im -DTIME -DRISCV
-TOOLCHAIN_PREFIX = /opt/riscv32im/bin/riscv32-unknown-elf-
+include /f-of-e-tools/tools/sunflower/conf/setup.conf
 
-ifeq ($(USE_MYSTDLIB),1)
-CFLAGS += -DUSE_MYSTDLIB -ffreestanding -nostdlib
-OBJS += start.o
-else
-OBJS += syscalls.o
-endif
+TREEROOT = $(SUNFLOWERROOT)
+GB3_ROOT = /gb3-2505
 
-test: testbench.vvp dhry.hex
-	vvp -N testbench.vvp
+TARGET-ARCH	= riscv32-elf
+TARGET		= riscv
 
-test_trace: testbench.vvp dhry.hex
-	vvp -N $< +trace
-	python3 ../showtrace.py testbench.trace dhry.elf > testbench.ins
+PROGRAM		= dhry_1
+PROGRAM-SF	= dhry_1-sf
+INIT		= init
+INIT-SF		= init-sf
 
-test_nola: testbench_nola.vvp dhry.hex
-	vvp -N testbench_nola.vvp
+INCLUDE_DIR = ../include
 
-timing: timing.txt
-	grep '^##' timing.txt | gawk 'x != "" {print x,$$3-y;} {x=$$2;y=$$3;}' | sort | uniq -c | \
-		gawk '{printf("%03d-%-7s %2d %-8s (%d)\n",$$3,$$2,$$3,$$2,$$1);}' | sort | cut -c13-
+OPTFLAGS	= -O0
+CFLAGS		= -march=rv32i -mabi=ilp32 $(TARGET-ARCH-FLAGS) -w \
+				-DTIME -DHZ=60
+ASFLAGS		= --march=rv32i --mabi=ilp32
+INCLUDES	= -I$(INCLUDE_DIR)
+LDFLAGS		= -L$(TOOLSLIB)/$(TARGET) -Map $(PROGRAM).map -Tsail.ld
+LDFLAGS-SF	= -Ttext $(LOADADDR-SF)  -L$(TOOLSLIB)/$(TARGET) -Map $(PROGRAM).map
+SREC2HEX	= srec2hex
+LOADADDR-SF	= 0x08004000
 
-timing.txt: timing.vvp dhry.hex
-	vvp -N timing.vvp > timing.txt
+OBJS		=\
+		$(INIT).o\
+		$(PROGRAM).o\
 
-testbench.vvp: testbench.v ../picorv32.v
-	iverilog -o testbench.vvp testbench.v ../picorv32.v
-	chmod -x testbench.vvp
+OBJS-SF		=\
+		$(INIT-SF).o\
+		$(PROGRAM).o\
 
-testbench_nola.vvp: testbench_nola.v ../picorv32.v
-	iverilog -o testbench_nola.vvp testbench_nola.v ../picorv32.v
-	chmod -x testbench_nola.vvp
+all:	$(PROGRAM) $(PROGRAM).sr $(PROGRAM-SF) $(PROGRAM-SF).sr Makefile
 
-timing.vvp: testbench.v ../picorv32.v
-	iverilog -o timing.vvp -DTIMING testbench.v ../picorv32.v
-	chmod -x timing.vvp
+$(INIT).o: $(INIT).S
+	$(AS) $(ASFLAGS) $(INIT).S -o $(INIT).o
 
-dhry.hex: dhry.elf
-	$(TOOLCHAIN_PREFIX)objcopy -O verilog $< $@
+$(PROGRAM): $(OBJS)
+	$(LD) $(LDFLAGS) $(OBJS) -o $@ -lc -lm -lgcc
 
-ifeq ($(USE_MYSTDLIB),1)
-dhry.elf: $(OBJS) sections.lds
-	$(TOOLCHAIN_PREFIX)gcc $(CFLAGS) -Wl,-Bstatic,-T,sections.lds,-Map,dhry.map,--strip-debug -o $@ $(OBJS) -lgcc
-	chmod -x $@
-else
-dhry.elf: $(OBJS)
-	$(TOOLCHAIN_PREFIX)gcc $(CFLAGS) -Wl,-Bstatic,-T,../firmware/riscv.ld,-Map,dhry.map,--strip-debug -o $@ $(OBJS) -lgcc -lc
-	chmod -x $@
-endif
+$(PROGRAM).sr:$(PROGRAM)
+	$(OBJCOPY) -O srec $(PROGRAM) $@
 
-%.o: %.c
-	$(TOOLCHAIN_PREFIX)gcc -c $(CFLAGS) $<
+$(PROGRAM).o: $(PROGRAM).c Makefile
+	$(CC) $(CFLAGS) $(OPTFLAGS) $(INCLUDES) -c $(PROGRAM).c
 
-%.o: %.S
-	$(TOOLCHAIN_PREFIX)gcc -c $(CFLAGS) $<
 
-dhry_1.o dhry_2.o: CFLAGS += -Wno-implicit-int -Wno-implicit-function-declaration
+$(INIT-SF).o: $(INIT-SF).S
+	$(CPP) $(INIT-SF).S > $(INIT-SF).i; $(AS) $(ASFLAGS) $(INIT-SF).i -o $(INIT-SF).o
+
+$(PROGRAM-SF): $(OBJS-SF)
+	$(LD) $(LDFLAGS-SF) $(OBJS-SF) -o $@ -lc -lgcc -lgloss
+
+$(PROGRAM-SF).sr:$(PROGRAM-SF)
+	$(OBJCOPY) -O srec $(PROGRAM-SF) $@
+
+install: all
+	mkdir -p $(GB3_ROOT)/processor/programs/
+	$(SREC2HEX) -b 4096 $(PROGRAM).sr
+	cp program.hex $(GB3_ROOT)/processor/programs/
+	cp data.hex $(GB3_ROOT)/processor/programs/
 
 clean:
-	rm -rf *.o *.d dhry.elf dhry.map dhry.bin dhry.hex testbench.vvp testbench.vcd timing.vvp timing.txt testbench_nola.vvp
-
-.PHONY: test clean
-
--include *.d
-
+	$(RM) init.i *.o $(PROGRAM) $(PROGRAM).sr $(PROGRAM).map
+	$(RM) init-sf.i *.o $(PROGRAM-SF) $(PROGRAM-SF).sr $(PROGRAM-SF).map
+	$(RM) program.hex data.hex
