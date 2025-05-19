@@ -16,7 +16,7 @@ int main(void)
 	volatile unsigned int *gDebugLedsMemoryMappedRegister = (unsigned int *)0x2000;
 	while (1)
 	{
-		*gDebugLedsMemoryMappedRegister = 0xFF;
+		*gDebugLedsMemoryMappedRegister = 0x01;
 
 		/*
 		 *	Spin

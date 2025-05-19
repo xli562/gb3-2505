@@ -4,6 +4,7 @@
 !*/
 
 *simlog.node0
+scratch/
 
 # allow Makefiles
 !**Makefile**

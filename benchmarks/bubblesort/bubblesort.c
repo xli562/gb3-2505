@@ -11,14 +11,14 @@ int main(void) {
 
   const int bsort_input_len = 0x426;
 
-  volatile unsigned int *gDebugLedsMemoryMappedRegister = (unsigned int *)0x2000;
+  // volatile unsigned int *gDebugLedsMemoryMappedRegister = (unsigned int *)0x2000;
 
   int i;
   int maxindex = bsort_input_len - 1;
 
-  *gDebugLedsMemoryMappedRegister = 0xFF;
+  // *gDebugLedsMemoryMappedRegister = 0xFF;
   while (maxindex > 0) {
-    *gDebugLedsMemoryMappedRegister = ~(*gDebugLedsMemoryMappedRegister);
+    // *gDebugLedsMemoryMappedRegister = ~(*gDebugLedsMemoryMappedRegister);
     for (i = 0; i < maxindex; i++) {
       if (bsort_input[i] > bsort_input[i + 1]) {
         /*		swap		*/
@@ -30,6 +30,32 @@ int main(void) {
 
     maxindex--;
   }
+  
+  // // Flash 1Hz forever
+  // enum
+	// {
+	// 	kSpinDelay = 400000,
+	// };
+
+	// while (1)
+	// {
+	// 	*gDebugLedsMemoryMappedRegister = 0x01;
+
+	// 	/*
+	// 	 *	Spin
+	// 	 */
+	// 	for (int j = 0; j < kSpinDelay; j++)
+	// 		;
+
+	// 	*gDebugLedsMemoryMappedRegister = 0x00;
+
+	// 	/*
+	// 	 *	Spin
+	// 	 */
+	// 	for (int j = 0; j < kSpinDelay; j++)
+	// 		;
+	// }
+
 
   return 0;
 }
