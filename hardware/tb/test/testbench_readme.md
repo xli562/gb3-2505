@@ -2,7 +2,7 @@
 
 ## Testbench code structure
 
-The following draws example from `terminate_tb.py` in branch `vru`, commit `f967d8d09014a1d5a388ed3e25b5a8bf46c18f09`. Every line (excluding some newlines) of the original code can be found below, in sequence.
+The following draws example from `terminate_tb.py` in branch `vru`, commit `f967d8d09014a1d5a388ed3e25b5a8bf46c18f09`. Every line (excluding some newlines) of the original code can be found below, in sequence.  
 
 _There is also a simple manual testbench (`hardware/tb/manual_tb.py`) if you want to manually tick the clock by pressing `ENTER` keys. The code should be short and self-explaniroty._
 

@@ -31,7 +31,7 @@ class Testbench:
         """ Reads parameters from the DUT. Makes them 
         accessible with self.<PARAMETER_NAME>. 
         
-        :param attrs: (list-like) list of parameters defined in the .sv file,
+        :param attrs: (list-like) list of parameters defined in the .v file,
                 eg ['DEPTH', 'DATA_WIDTH', 'DATA_FRAC'] 
         :return: None """
 

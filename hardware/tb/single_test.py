@@ -32,7 +32,7 @@ def single_test(
     print("# ---------------------------------------")
     
     # Gather all Verilog files in the module directory and its subdirectories
-    verilog_sources = [str(p) for p in Path(module_path).parent.glob('**/*.sv')]
+    verilog_sources = [str(p) for p in Path(module_path).parent.glob('**/*.v')]
     print(f"Verilog sources:")
     print_list(verilog_sources)
     
@@ -51,8 +51,7 @@ def single_test(
         try:
             runner.build(
                 verilog_sources=verilog_sources,
-                includes=[str(component_path.joinpath(f"{d}/rtl/")) for d in dependencies]
-                          + [str(Path(module_path).parent)] + ['/home/xl562/3dgs/3DGS/hardware/rtl/vru'],
+                includes=dependencies,
                 hdl_toplevel=top_module,
                 build_args=[
                     "-Wno-GENUNNAMED",

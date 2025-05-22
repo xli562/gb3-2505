@@ -5,13 +5,14 @@ from datetime import datetime
 from single_test import single_test
 from mods.exception_mods import *
 
-compute_unit_name = 'vru'
+compute_unit_name = 'processor'
 
 def move_file(test_dir:str, module_under_test:str) -> str:
     """ Moves the file into the waves folder, 
     and renames it as e.g. 240923_110745_terminate"""
 
-    filename = datetime.now().strftime('%y%m%d_%H%M%S_') + module_under_test + '.vcd'
+    # filename = module_under_test + '.vcd'
+    filename = datetime.now().strftime('%y%m%d_%H_') + module_under_test + '.vcd'
     shutil.move(test_dir / compute_unit_name / 'dump.vcd', test_dir / 'waves' / filename)
 
 if __name__ == '__main__':
@@ -47,11 +48,12 @@ if __name__ == '__main__':
     
     single_test(
         test_id=1,
-        dependencies=[compute_unit_name],
+        dependencies=[compute_unit_name,
+                      project_dir / 'rtl' / compute_unit_name / 'verilog'],
         top_module=f'{module_under_test}',
         test_module=f'{module_under_test}_tb',
         module_params=module_params,
-        module_path=project_dir / 'rtl' / compute_unit_name / f'{module_under_test}.sv',
+        module_path=project_dir / 'rtl' / compute_unit_name / 'verilog' / f'{module_under_test}.v',
         component_path=project_dir / 'rtl' / compute_unit_name,
         sim_build_dir=sim_build_dir,
         test_files_dir=test_dir / compute_unit_name,
