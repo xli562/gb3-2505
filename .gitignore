@@ -2,11 +2,6 @@
 **/tb/**/sim_build**
 **/tb/**/waves/**
 
-# Scratch folder
-scratch/
-scratch/**
-scratch/output.txt
-
 # Python bytecode, IDE & macOS cruft
 __pycache__/
 .vscode/
@@ -22,6 +17,11 @@ __pycache__/
 # Allow Makefiles and Verilog source code
 !**Makefile**
 !processor/verilog
+
+# Scratch folder
+scratch/
+scratch/**
+scratch/output.txt
 
 # Build artifacts
 **build/**
