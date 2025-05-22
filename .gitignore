@@ -5,6 +5,7 @@
 # Scratch folder
 scratch/
 scratch/**
+scratch/output.txt
 
 # Python bytecode, IDE & macOS cruft
 __pycache__/

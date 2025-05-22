@@ -1,5 +1,6 @@
 # TODO
 
+- Check if bubblesort in branch `tests` works on FPGA.
 - Reformat dirs and write simple cocotb test for adder
 
 ## Questions for Tuesday 20
