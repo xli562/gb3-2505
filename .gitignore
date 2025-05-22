@@ -4,6 +4,7 @@
 
 # Scratch folder
 scratch/
+scratch/**
 
 # Python bytecode, IDE & macOS cruft
 __pycache__/
