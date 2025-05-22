@@ -84,6 +84,15 @@ sudo iceprog-S build/design.bin
 
 to upload the design through USB.
 
+### Measurement
+
+#### Execution time
+
+Two controllable pins are found:
+
+led[7] -> E4 -> pin 15 of J33
+led[0] -> D3 -> Green LED ("D14" on the PCB).
+
 ## Tools for convenience
 
 `tmux` makes switching between docker and linux easier. I personally distrust the VS Code intergrated command line.
