@@ -1,22 +1,28 @@
-# disallow all files without extensions
+# Testbench outputs
+**/tb/**/sim_build**
+**/tb/**/waves/**
+
+# Scratch folder
+scratch/
+
+# Python bytecode, IDE & macOS cruft
+__pycache__/
+.vscode/
+.DS_Store
+.DS_Store**
+
+# Disallow all files without extensions
 *
 !*.*
 !*/
+**/simlog.node0
 
-*simlog.node0
-scratch/
-
-# allow Makefiles
+# Allow Makefiles and Verilog source code
 !**Makefile**
 !processor/verilog
 
-# vscode and mac specific files
-.vscode/**
-.DS_Store**
-
+# Build artifacts
 **build/**
-
-!**/*.*
 **/*.blif
 **/*.json
 **/*.asc
