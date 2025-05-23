@@ -13,7 +13,7 @@ module cpu(
 			data_mem_memread,
 			data_mem_sign_mask,
 			led_i,
-			led_o,
+			led_o
 		);
 	/*
 	 *	Input Clock
