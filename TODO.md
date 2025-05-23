@@ -1,5 +1,6 @@
 # TODO
 
+- Create verilator config file for lint-off config
 - Check if bubblesort in branch `tests` works on FPGA.
 - Reformat dirs and write simple cocotb test for adder
 

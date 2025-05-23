@@ -22,6 +22,9 @@ all:
 	echo "Converted to bitstream:"; \
 	echo $$programs \
 
+clean-hw:
+	rm -f *.json *.blif *.asc *.bin
+
 clean:
 	rm -f *.json *.blif *.asc *.bin
 	rm -f programs/*.hex
