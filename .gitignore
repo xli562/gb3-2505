@@ -1,22 +1,32 @@
-# disallow all files without extensions
+# Disallow all files without extensions
 *
 !*.*
 !*/
+**/simlog.node0
 
-*simlog.node0
-scratch/
-
-# allow Makefiles
+# Allow Makefiles and Verilog source code
 !**Makefile**
 !processor/verilog
 
-# vscode and mac specific files
-.vscode/**
+# Python bytecode, IDE & macOS cruft
+**/__pycache__/
+**/*.pyc
+.venv/
+.vscode/
+.DS_Store
 .DS_Store**
 
-**build/**
+# Scratch folder
+scratch/
+scratch/**
+scratch/output.txt
 
-!**/*.*
+# Testbench outputs
+**/tb/**/sim_build**
+**/tb/**/waves/**
+
+# Build artifacts
+**build/**
 **/*.blif
 **/*.json
 **/*.asc
@@ -26,3 +36,4 @@ scratch/
 **/*.i
 **/*.sr
 **/*.map
+hardware/tb/mods/__pycache__/logging_mods.cpython-310.pyc
