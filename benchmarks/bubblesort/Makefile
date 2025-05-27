@@ -11,7 +11,7 @@ PROGRAM-SF	= bubblesort-sf
 INIT		= init
 INIT-SF		= init-sf
 
-INCLUDE_DIR = ../include
+INCLUDE_DIR = ../../include
 
 OPTFLAGS	= -O0
 CFLAGS		= -march=rv32i -mabi=ilp32 $(TARGET-ARCH-FLAGS) -Wall
