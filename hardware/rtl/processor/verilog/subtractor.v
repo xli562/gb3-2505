@@ -2,18 +2,20 @@
 `timescale 1ns / 1ps
 `include "../include/rv32i-defines.v"
 
-module adder (
-    input [31:0] input1, input2,
+module subtractor (
+    input [31:0] input1, input2, 
+    input clk,
     output [31:0] out
 );
 	wire CO_internal;
 
     SB_MAC16 i_sbmac16 (
-        .A(input1[31:16]),	// Assign adder inputs to 4 16 bit inputs
+        .A(input1[31:16]),	// Assign subtractor inputs to 4 16 bit inputs
         .B(input1[15:0]),
         .C(input2[31:16]),	
         .D(input2[15:0]),
         .O(out),	
+        .CLK(clk),
         .CE(1'b1),          // Always enable
         .CI(1'b0),          // No external carry-in
         .CO(CO_internal)    // Capture carry-out from bottom
@@ -29,5 +31,7 @@ module adder (
     defparam i_sbmac16.BOTOUTPUT_SELECT = 2'b01;
     defparam i_sbmac16.BOTADDSUB_UPPERINPUT = 1'b1;
     defparam i_sbmac16.BOTADDSUB_CARRYSELECT = 2'b00;
-
+    defparam i_sbmac16.ADDSUBTOP = 1'b1;
+    defparam i_sbmac16.ADDSUBBOT = 1'b1;
+    
 endmodule
