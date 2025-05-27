@@ -183,6 +183,7 @@ module cpu(
 		);
 
 	adder pc_adder(
+			.clk(clk),
 			.input1(32'b100),
 			.input2(pc_out),
 			.out(pc_adder_out)
@@ -332,6 +333,7 @@ module cpu(
 		);
 
 	adder addr_adder(
+			.clk(clk),
 			.input1(addr_adder_mux_out),
 			.input2(id_ex_out[139:108]),
 			.out(addr_adder_sum)
