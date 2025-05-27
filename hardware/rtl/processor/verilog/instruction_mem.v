@@ -37,37 +37,42 @@
 
 
 /*
- *	RISC-V CONTROL UNIT
+ *	RISC-V instruction memory
  */
-module control(
-		opcode,
-		MemtoReg,
-		RegWrite,
-		MemWrite,
-		MemRead,
-		Branch,
-		ALUSrc,
-		Jump,
-		Jalr,
-		Lui,
-		Auipc,
-		Fence,
-		CSRR
-	);
 
-	input	[6:0] opcode;
-	output	MemtoReg, RegWrite, MemWrite, MemRead, Branch, ALUSrc, Jump, Jalr, Lui, Auipc, Fence, CSRR;
 
-	assign MemtoReg = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[0]);
-	assign RegWrite = ((~(opcode[4] | opcode[5])) | opcode[2] | opcode[4]) & opcode[0];
-	assign MemWrite = (~opcode[6]) & (opcode[5]) & (~opcode[4]);
-	assign MemRead = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[1]);
-	assign Branch = (opcode[6]) & (~opcode[4]) & (~opcode[2]);
-	assign ALUSrc = ~(opcode[6] | opcode[4]) | (~opcode[5]);
-	assign Jump = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (opcode[2]);
-	assign Jalr = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[2]);
-	assign Lui = (~opcode[6]) & (opcode[5]) & (opcode[4]) & (~opcode[3]) & (opcode[2]);
-	assign Auipc = (~opcode[6]) & (~opcode[5]) & (opcode[4]) & (~opcode[3]) & (opcode[2]);
-	assign Fence = (~opcode[5]) & opcode[3] & (opcode[2]);
-	assign CSRR = (opcode[6]) & (opcode[4]);
+
+module instruction_memory(addr, out);
+	input [31:0]		addr;
+	output [31:0]		out;
+
+	/*
+	 *	Size the instruction memory.
+	 *
+	 *	(Bad practice: The constant should be a `define).
+	 */
+	reg [31:0]		instruction_memory[0:2**12-1];
+
+	/*
+	 *	According to the "iCE40 SPRAM Usage Guide" (TN1314 Version 1.0), page 5:
+	 *
+	 *		"SB_SPRAM256KA RAM does not support initialization through device configuration."
+	 *
+	 *	The only way to have an initializable memory is to use the Block RAM.
+	 *	This uses Yosys's support for nonzero initial values:
+	 *
+	 *		https://github.com/YosysHQ/yosys/commit/0793f1b196df536975a044a4ce53025c81d00c7f
+	 *
+	 *	Rather than using this simulation construct (`initial`),
+	 *	the design should instead use a reset signal going to
+	 *	modules in the design.
+	 */
+	initial begin
+		/*
+		 *	read from "program.hex" and store the instructions in instruction memory
+		 */
+		$readmemh("verilog/program.hex",instruction_memory);
+	end
+
+	assign out = instruction_memory[addr >> 2];
 endmodule

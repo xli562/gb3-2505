@@ -37,37 +37,32 @@
 
 
 /*
- *	RISC-V CONTROL UNIT
+ *	mask for loads/stores in data memory
  */
-module control(
-		opcode,
-		MemtoReg,
-		RegWrite,
-		MemWrite,
-		MemRead,
-		Branch,
-		ALUSrc,
-		Jump,
-		Jalr,
-		Lui,
-		Auipc,
-		Fence,
-		CSRR
-	);
 
-	input	[6:0] opcode;
-	output	MemtoReg, RegWrite, MemWrite, MemRead, Branch, ALUSrc, Jump, Jalr, Lui, Auipc, Fence, CSRR;
 
-	assign MemtoReg = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[0]);
-	assign RegWrite = ((~(opcode[4] | opcode[5])) | opcode[2] | opcode[4]) & opcode[0];
-	assign MemWrite = (~opcode[6]) & (opcode[5]) & (~opcode[4]);
-	assign MemRead = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[1]);
-	assign Branch = (opcode[6]) & (~opcode[4]) & (~opcode[2]);
-	assign ALUSrc = ~(opcode[6] | opcode[4]) | (~opcode[5]);
-	assign Jump = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (opcode[2]);
-	assign Jalr = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[2]);
-	assign Lui = (~opcode[6]) & (opcode[5]) & (opcode[4]) & (~opcode[3]) & (opcode[2]);
-	assign Auipc = (~opcode[6]) & (~opcode[5]) & (opcode[4]) & (~opcode[3]) & (opcode[2]);
-	assign Fence = (~opcode[5]) & opcode[3] & (opcode[2]);
-	assign CSRR = (opcode[6]) & (opcode[4]);
+
+module sign_mask_gen(func3, sign_mask);
+	input [2:0]	func3;
+	output [3:0]	sign_mask;
+
+	reg [2:0]	mask;
+
+	/*
+	 *	sign - for LBU and LHU the sign bit is 0, indicating read data should be zero extended, otherwise sign extended
+	 *	mask - for determining if the load/store operation is on word, halfword or byte
+	 *
+	 *	TODO - a Karnaugh map should be able to describe the mask without case, the case is for reading convenience
+	*/
+
+	always @(*) begin
+		case(func3[1:0])
+			2'b00: mask = 3'b001;	// byte only
+			2'b01: mask = 3'b011;	// halfword
+			2'b10: mask = 3'b111;	// word
+			default: mask = 3'b000;	// should not happen for loads/stores
+		endcase
+	end
+
+	assign sign_mask = {(~func3[2]), mask};
 endmodule

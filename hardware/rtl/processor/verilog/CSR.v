@@ -37,37 +37,28 @@
 
 
 /*
- *	RISC-V CONTROL UNIT
+ *	Description:
+ *
+ *		This module implements the control and status registers (CSRs).
  */
-module control(
-		opcode,
-		MemtoReg,
-		RegWrite,
-		MemWrite,
-		MemRead,
-		Branch,
-		ALUSrc,
-		Jump,
-		Jalr,
-		Lui,
-		Auipc,
-		Fence,
-		CSRR
-	);
 
-	input	[6:0] opcode;
-	output	MemtoReg, RegWrite, MemWrite, MemRead, Branch, ALUSrc, Jump, Jalr, Lui, Auipc, Fence, CSRR;
 
-	assign MemtoReg = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[0]);
-	assign RegWrite = ((~(opcode[4] | opcode[5])) | opcode[2] | opcode[4]) & opcode[0];
-	assign MemWrite = (~opcode[6]) & (opcode[5]) & (~opcode[4]);
-	assign MemRead = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[1]);
-	assign Branch = (opcode[6]) & (~opcode[4]) & (~opcode[2]);
-	assign ALUSrc = ~(opcode[6] | opcode[4]) | (~opcode[5]);
-	assign Jump = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (opcode[2]);
-	assign Jalr = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[2]);
-	assign Lui = (~opcode[6]) & (opcode[5]) & (opcode[4]) & (~opcode[3]) & (opcode[2]);
-	assign Auipc = (~opcode[6]) & (~opcode[5]) & (opcode[4]) & (~opcode[3]) & (opcode[2]);
-	assign Fence = (~opcode[5]) & opcode[3] & (opcode[2]);
-	assign CSRR = (opcode[6]) & (opcode[4]);
+
+module csr_file (clk, write, wrAddr_CSR, wrVal_CSR, rdAddr_CSR, rdVal_CSR);
+	input clk;
+	input write;
+	input [11:0] wrAddr_CSR;
+	input [31:0] wrVal_CSR;
+	input [11:0] rdAddr_CSR;
+	output reg[31:0] rdVal_CSR;
+
+	reg [31:0] csr_file [0:2**10-1];
+
+	always @(posedge clk) begin
+		if (write) begin
+			csr_file[wrAddr_CSR] <= wrVal_CSR;
+		end
+		rdVal_CSR <= csr_file[rdAddr_CSR];
+	end
+
 endmodule
