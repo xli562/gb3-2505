@@ -7,7 +7,7 @@ colorama_init(autoreset=True)
 def color_log(dut, message:str, color:str=None, log_error=False):
     """ Makes it easier to log messages in color
     Instead of `dut._log.info(Fore.GREEN + 'message' + Style.RESET_ALL)`,
-    now use `color_log(dut, 'message')` 
+    now use `color_log(dut, 'message', 'color')` 
     
     :param dut: The DUT
     :param message: (str) The message to log
@@ -116,13 +116,3 @@ def get_in_out_ports(dut):
                 internal_signals.append(signal_name)
     
     return in_ports, out_ports, internal_signals
-
-
-def print_list(lst):
-    """ Prints an iterable, newline for every element. Uses python `print()`.
-
-    :param lst: (iterable) The iterable to be printed
-    :return: None """
-    
-    for item in lst:
-        print(item)

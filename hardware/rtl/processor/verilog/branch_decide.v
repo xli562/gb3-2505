@@ -3,21 +3,19 @@
 `include "../include/rv32i-defines.v"
 
 /*
- *	Description:
- *
- *		This module implements the branch resolution, located in MEM stage
+ * Implements branch resolution, located in MEM stage
  */
 
-module branch_decide (Branch, Predicted, Branch_Enable, Jump, Mispredict, Decision, Branch_Jump_Trigger);
-	input	Branch;
-	input	Predicted;
-	input	Branch_Enable;
-	input	Jump;
-	output	Mispredict;
-	output	Decision;
-	output	Branch_Jump_Trigger;
-
-	assign	Branch_Jump_Trigger	= ((!Predicted) & (Branch & Branch_Enable)) | Jump;
-	assign	Decision		= (Branch & Branch_Enable);
-	assign	Mispredict		= (Predicted & (!(Branch & Branch_Enable)));
+module branch_decide (
+    input  wire branch,  
+    input  wire predicted,  
+    input  wire branch_enable,  
+    input  wire jump,  
+    output wire mispredict,  
+    output wire decision,  
+    output wire branch_jump_trigger
+);
+    assign branch_jump_trigger = ((!predicted) & (branch & branch_enable)) | jump;
+    assign decision            = (branch & branch_enable);
+    assign mispredict          = (predicted & (!(branch & branch_enable)));
 endmodule

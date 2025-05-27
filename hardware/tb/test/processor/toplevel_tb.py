@@ -2,9 +2,6 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
 
-from mods.logging_mods import *
-from mods.quantization_mods import *
-
 @cocotb.test()
 async def test_toplevel_simple_1(dut):
     """ Minimal test of toplevel """

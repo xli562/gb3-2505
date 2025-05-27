@@ -64,8 +64,8 @@ module cpu(
 	wire			RegWrite1;
 	wire			MemWrite1;
 	wire			MemRead1;
-	wire			Branch1;
-	wire			Jump1;
+	wire			branch1;
+	wire			jump1;
 	wire			Jalr1;
 	wire			ALUSrc1;
 	wire			Lui1;
@@ -191,9 +191,9 @@ module cpu(
 			.RegWrite(RegWrite1),
 			.MemWrite(MemWrite1),
 			.MemRead(MemRead1),
-			.Branch(Branch1),
+			.branch(branch1),
 			.ALUSrc(ALUSrc1),
-			.Jump(Jump1),
+			.jump(jump1),
 			.Jalr(Jalr1),
 			.Lui(Lui1),
 			.Auipc(Auipc1),
@@ -202,7 +202,7 @@ module cpu(
 		);
 
 	mux2to1 cont_mux(
-			.input0({21'b0, Jalr1, ALUSrc1, Lui1, Auipc1, Branch1, MemRead1, MemWrite1, CSRR_signal, RegWrite1, MemtoReg1, Jump1}),
+			.input0({21'b0, Jalr1, ALUSrc1, Lui1, Auipc1, branch1, MemRead1, MemWrite1, CSRR_signal, RegWrite1, MemtoReg1, jump1}),
 			.input1(32'b0),
 			.select(decode_ctrl_mux_sel),
 			.out(cont_mux_out)
@@ -334,7 +334,7 @@ module cpu(
 	// clk counts clock cycles,
 	// |ex_mem_out[8:0] counts retired instructions.
 	cycle_counter counter_clock_inst (
-			.clk_i(posedge_retire),
+			.clk_i(clk),
 			.rstn_i(1'b1),
 			.cycles_i('1),	// Start count at 0
 			.start_i(1'b1),
@@ -348,7 +348,7 @@ module cpu(
 			.A(wb_fwd1_mux_out),
 			.B(alu_mux_out),
 			.ALUOut(alu_result),
-			.Branch_Enable(alu_branch_enable)
+			.branch_enable(alu_branch_enable)
 		);
 
 	mux2to1 lui_mux(
@@ -367,13 +367,13 @@ module cpu(
 
 	//Memory Access Stage
 	branch_decide branch_decide_0(
-			.Branch(ex_mem_out[6]),
-			.Predicted(ex_mem_out[7]),
-			.Branch_Enable(ex_mem_out[73]),
-			.Jump(ex_mem_out[0]),
-			.Mispredict(mistake_trigger),
-			.Decision(actual_branch_decision),
-			.Branch_Jump_Trigger(pcsrc)
+			.branch(ex_mem_out[6]),
+			.predicted(ex_mem_out[7]),
+			.branch_enable(ex_mem_out[73]),
+			.jump(ex_mem_out[0]),
+			.mispredict(mistake_trigger),
+			.decision(actual_branch_decision),
+			.branch_jump_trigger(pcsrc)
 		);
 
 	mux2to1 auipc_mux(

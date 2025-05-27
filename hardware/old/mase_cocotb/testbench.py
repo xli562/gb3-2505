@@ -82,7 +82,7 @@ class Testbench:
         while True:
             await RisingEdge(self.clk)
 
-            # ! TODO: check if this slows down test significantly
+            # TODO: check if this slows down test significantly
             if get_sim_time(timeout_unit) > timeout:
                 raise TimeoutError("Timed out waiting for test to end.")
 

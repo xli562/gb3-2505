@@ -1,5 +1,7 @@
 # TODO
 
+1. Watch Moodle videos: pipelining (14'), sunflower tutorial (28'), verilog tutorial (53'), intro to FPGA tools (5'); read Emma (17p), Amdahl (3p), Reevaluating Amdahl (2p).
+1. Count PC changes to approximate instruction count.
 1. Go through & write tests & format RTL source code
 1. Enable .hex files to be loaded in Cocotb/Verilator simulation
 1. Add reset logic for consistent behaviour

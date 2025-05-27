@@ -11,9 +11,9 @@ module control_unit(
 		RegWrite,
 		MemWrite,
 		MemRead,
-		Branch,
+		branch,
 		ALUSrc,
-		Jump,
+		jump,
 		Jalr,
 		Lui,
 		Auipc,
@@ -22,15 +22,15 @@ module control_unit(
 	);
 
 	input	[6:0] opcode;
-	output	MemtoReg, RegWrite, MemWrite, MemRead, Branch, ALUSrc, Jump, Jalr, Lui, Auipc, Fence, CSRR;
+	output	MemtoReg, RegWrite, MemWrite, MemRead, branch, ALUSrc, jump, Jalr, Lui, Auipc, Fence, CSRR;
 
 	assign MemtoReg = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[0]);
 	assign RegWrite = ((~(opcode[4] | opcode[5])) | opcode[2] | opcode[4]) & opcode[0];
 	assign MemWrite = (~opcode[6]) & (opcode[5]) & (~opcode[4]);
 	assign MemRead = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[1]);
-	assign Branch = (opcode[6]) & (~opcode[4]) & (~opcode[2]);
+	assign branch = (opcode[6]) & (~opcode[4]) & (~opcode[2]);
 	assign ALUSrc = ~(opcode[6] | opcode[4]) | (~opcode[5]);
-	assign Jump = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (opcode[2]);
+	assign jump = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (opcode[2]);
 	assign Jalr = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[2]);
 	assign Lui = (~opcode[6]) & (opcode[5]) & (opcode[4]) & (~opcode[3]) & (opcode[2]);
 	assign Auipc = (~opcode[6]) & (~opcode[5]) & (opcode[4]) & (~opcode[3]) & (opcode[2]);
