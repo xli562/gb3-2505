@@ -3,31 +3,9 @@
 `include "../include/rv32i-defines.v"
 
 module adder (
-    input [31:0] input1, input2,
-    output [31:0] out
+    input  wire [31:0] input1,
+    input  wire [31:0] input2,
+    output wire [31:0] out
 );
-	wire CO_internal;
-
-    SB_MAC16 i_sbmac16 (
-        .A(input1[31:16]),	// Assign adder inputs to 4 16 bit inputs
-        .B(input1[15:0]),
-        .C(input2[31:16]),	
-        .D(input2[15:0]),
-        .O(out),	
-        .CE(1'b1),          // Always enable
-        .CI(1'b0),          // No external carry-in
-        .CO(CO_internal)    // Capture carry-out from bottom
-    );
-
-    defparam i_sbmac16.C_REG = 1'b1;
-    defparam i_sbmac16.A_REG = 1'b1;
-    defparam i_sbmac16.B_REG = 1'b1;
-    defparam i_sbmac16.D_REG = 1'b1;
-    defparam i_sbmac16.TOPOUTPUT_SELECT = 2'b01;
-    defparam i_sbmac16.TOPADDSUB_UPPERINPUT = 1'b1;
-    defparam i_sbmac16.TOPADDSUB_CARRYSELECT = 2'b11;
-    defparam i_sbmac16.BOTOUTPUT_SELECT = 2'b01;
-    defparam i_sbmac16.BOTADDSUB_UPPERINPUT = 1'b1;
-    defparam i_sbmac16.BOTADDSUB_CARRYSELECT = 2'b00;
-
+    assign out = input1 + input2;
 endmodule
