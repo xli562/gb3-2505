@@ -9,7 +9,7 @@ all:
 	cp programs/*_program.hex verilog/program.hex
 
 # Synthesize rtl into .json netlist
-	yosys -q $(RTL_ROOT)/processor/$(DESIGN).ys
+	yosys -q $(RTL_ROOT)/processor/$(DESIGN).ys -l stats.txt
 # Place-and-route, translates the .json netlist to .asc bitstream
 	nextpnr-ice40 --up5k --package uwg30 --json $(DESIGN).json --pcf $(DESIGN).pcf --asc $(DESIGN).asc
 # Timing analysis for the .asc bitstream
