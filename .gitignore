@@ -36,5 +36,5 @@ scratch/output.txt
 **/*.i
 **/*.sr
 **/*.map
-**/stats.txt
+**/*stats.txt
 hardware/tb/mods/__pycache__/logging_mods.cpython-310.pyc
