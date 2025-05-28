@@ -88,7 +88,7 @@ module cpu(
 	 *	Pipeline Registers
 	 */
 	wire [63:0]		if_id_out;
-	wire [177:0]		id_ex_out;
+	wire [176:0]		id_ex_out;
 	wire [154:0]		ex_mem_out;
 	wire [116:0]		mem_wb_out;
 
@@ -362,7 +362,7 @@ module cpu(
 	//EX/MEM Pipeline Register
 	ex_mem ex_mem_reg(
 			.clk(clk),
-			.data_in({id_ex_out[177:166], id_ex_out[155:151], wb_fwd2_mux_out, lui_result, alu_branch_enable, addr_adder_sum, id_ex_out[43:12], ex_cont_mux_out[8:0]}),
+			.data_in({id_ex_out[176:165], id_ex_out[154:150], wb_fwd2_mux_out, lui_result, alu_branch_enable, addr_adder_sum, id_ex_out[43:12], ex_cont_mux_out[8:0]}),
 			.data_out(ex_mem_out)
 		);
 
@@ -415,13 +415,13 @@ module cpu(
 
 	//Forwarding Unit
 	ForwardingUnit forwarding_unit(
-			.rs1(id_ex_out[160:156]),
-			.rs2(id_ex_out[165:161]),
+			.rs1(id_ex_out[159:155]),
+			.rs2(id_ex_out[164:160]),
 			.MEM_RegWriteAddr(ex_mem_out[142:138]),
 			.WB_RegWriteAddr(mem_wb_out[104:100]),
 			.MEM_RegWrite(ex_mem_out[2]),
 			.WB_RegWrite(mem_wb_out[2]),
-			.EX_CSRR_Addr(id_ex_out[177:166]),
+			.EX_CSRR_Addr(id_ex_out[176:165]),
 			.MEM_CSRR_Addr(ex_mem_out[154:143]),
 			.WB_CSRR_Addr(mem_wb_out[116:105]),
 			.MEM_CSRR(ex_mem_out[3]),

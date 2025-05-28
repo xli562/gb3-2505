@@ -71,8 +71,8 @@ endmodule
 /* ID/EX pipeline registers */ 
 module id_ex (clk, data_in, data_out);
 	input			clk;
-	input [177:0]		data_in;
-	output reg[177:0]	data_out;
+	input [176:0]		data_in;
+	output reg[176:0]	data_out;
 
 	/*
 	 *	The `initial` statement below uses Yosys's support for nonzero
@@ -85,7 +85,7 @@ module id_ex (clk, data_in, data_out);
 	 *	modules in the design and to thereby set the values.
 	 */
 	initial begin
-		data_out = 178'b0;
+		data_out = 177'b0;
 	end
 
 	always @(posedge clk) begin
