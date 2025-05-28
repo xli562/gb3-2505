@@ -43,7 +43,7 @@
 
 
 module sign_mask_gen(func3, sign_mask);
-	input [2:0]	func3;
+	input [1:0]	func3;
 	output [2:0]	sign_mask;
 
 	reg [1:0]	mask;

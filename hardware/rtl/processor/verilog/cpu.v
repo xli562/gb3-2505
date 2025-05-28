@@ -266,7 +266,7 @@ module cpu(
 		);
 
 	sign_mask_gen sign_mask_gen_inst(
-			.func3(if_id_out[46:44]),
+			.func3(if_id_out[45:44]),
 			.sign_mask(dataMem_sign_mask)
 		);
 
