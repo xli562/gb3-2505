@@ -72,7 +72,7 @@ module cpu(
 	output [31:0]		data_mem_WrData;
 	output			data_mem_memwrite;
 	output			data_mem_memread;
-	output [3:0]		data_mem_sign_mask;
+	output [2:0]		data_mem_sign_mask;
 
 	/*
 	 *	Program Counter
@@ -121,7 +121,7 @@ module cpu(
 	wire [31:0]		RegA_AddrFwdFlush_mux_out;
 	wire [31:0]		RegB_AddrFwdFlush_mux_out;
 	wire [31:0]		rdValOut_CSR;
-	wire [3:0]		dataMem_sign_mask;
+	wire [2:0]		dataMem_sign_mask;
 
 	/*
 	 *	Execute stage
@@ -514,5 +514,5 @@ module cpu(
 	assign data_mem_WrData = wb_fwd2_mux_out;
 	assign data_mem_memwrite = ex_cont_mux_out[4];
 	assign data_mem_memread = ex_cont_mux_out[5];
-	assign data_mem_sign_mask = id_ex_out[150:147];
+	assign data_mem_sign_mask = id_ex_out[149:147];
 endmodule

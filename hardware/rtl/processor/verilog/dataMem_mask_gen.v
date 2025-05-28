@@ -44,9 +44,9 @@
 
 module sign_mask_gen(func3, sign_mask);
 	input [2:0]	func3;
-	output [3:0]	sign_mask;
+	output [2:0]	sign_mask;
 
-	reg [2:0]	mask;
+	reg [1:0]	mask;
 
 	/*
 	 *	sign - for LBU and LHU the sign bit is 0, indicating read data should be zero extended, otherwise sign extended
@@ -56,9 +56,8 @@ module sign_mask_gen(func3, sign_mask);
 	*/
 
 
-	assign mask[2] = func3[1] & ~func3[0];
-	assign mask[1] = func3[1] ^ func3[0];
-	assign mask[0] = ~(func3[1] & func3[0]);
+	assign mask[1] = func3[1] & ~func3[0];
+	assign mask[0] = func3[1] ^ func3[0];
 
 
 	assign sign_mask = {(~func3[2]), mask};
