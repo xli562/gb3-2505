@@ -16,7 +16,7 @@ int main(void) {
     };
     
     // const int bsort_input_len = 8;
-    const int bsort_input_len = 264;
+    const int bsort_input_len = 0x108;
     
     
     int i;

@@ -17,8 +17,8 @@ def _move_waveform_file(test_dir:str, module_under_test:str) -> str:
     """ Moves the waveform file into tb/test/waves, 
     and renames it as e.g. 240923_110745_terminate """
 
-    filename = datetime.now().strftime('%y%m%d_%H_%M_%s') + module_under_test + '.fst'
-    shutil.move(test_dir / compute_unit_name / 'dump.fst', test_dir / 'waves' / filename)
+    filename = datetime.now().strftime('%y%m%d_%H_%M_%S_') + module_under_test + '.fst'
+    shutil.move(test_dir / compute_unit_name / 'dump.fst', test_dir.parent / 'waves' / filename)
 
 def _update_defines(defines_path, output_dir):
     """ Parse Verilog `define`s (including bin/dec/hex literals) into a Python dict

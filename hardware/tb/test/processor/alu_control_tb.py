@@ -4,6 +4,7 @@ from cocotb.binary import BinaryValue
 from cocotb.result import TestFailure
 
 from utils.defines import *
+from utils.cocotb_logging import color_log
 
 @cocotb.test()
 async def test_all_alu_control_cases(dut):
@@ -16,6 +17,7 @@ async def test_all_alu_control_cases(dut):
         await Timer(1, units="ns")
         result = int(dut.ALUCtl.value)
         if result != expected:
+            color_log(dut, )
             raise TestFailure(
                 f"Mismatch for OPCODE=0b{opcode:07b} "
                 f"FUNC=0b{funccode:04b}: got 0b{result:07b}, "
