@@ -70,7 +70,7 @@ module branch_predictor(
 	/*
 	 *	internal state
 	 */
-	reg [1:0]	s;
+	reg s;
 
 	reg		branch_mem_sig_reg;
 
@@ -85,7 +85,7 @@ module branch_predictor(
 	 *	modules in the design and to thereby set the values.
 	 */
 	initial begin
-		s = 2'b00;
+		s = 1'b0;
 		branch_mem_sig_reg = 1'b0;
 	end
 
@@ -100,11 +100,10 @@ module branch_predictor(
 	 */
 	always @(posedge clk) begin
 		if (branch_mem_sig_reg) begin
-			s[1] <= (s[1]&s[0]) | (s[0]&actual_branch_decision) | (s[1]&actual_branch_decision);
-			s[0] <= (s[1]&(!s[0])) | ((!s[0])&actual_branch_decision) | (s[1]&actual_branch_decision);
+			s <= actual_branch_decision;
 		end
 	end
 
 	assign branch_addr = in_addr + offset;
-	assign prediction = s[1] & branch_decode_sig;
+	assign prediction = s & branch_decode_sig;
 endmodule
