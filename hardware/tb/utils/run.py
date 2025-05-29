@@ -81,14 +81,14 @@ def _single_test(
     enable_trace:bool          = False, # Enable waveform trace
     skip_build:bool            = False, # Skip the build process if True
 ):
-    print(f"# ---------------------------------------")
-    print(f"# Test {test_id}")
-    print(f"# ---------------------------------------")
-    print(f"# Parameters:")
-    print(f"# - {'Test Index'}: {test_id}")
+    logger.info(f"# ---------------------------------------")
+    logger.info(f"# Test {test_id}")
+    logger.info(f"# ---------------------------------------")
+    logger.info(f"# Parameters:")
+    logger.info(f"# - {'Test Index'}: {test_id}")
     for param_name, param_value in module_params.items():
-        print(f"# - {param_name}: {param_value}")
-    print("# ---------------------------------------")
+        logger.info(f"# - {param_name}: {param_value}")
+    logger.info("# ---------------------------------------")
     
     # Gather all Verilog files in the module directory and its subdirectories
     verilog_sources = [str(p) for p in Path(module_path).parent.glob('**/*.v')]
@@ -160,7 +160,7 @@ def _single_test(
             shutil.move(str(gmon_src), str(sim_build_dir / "gmon.out"))
         
     except Exception as build_error:
-        print(f"Error occurred while running Verilator simulation: {build_error}")
+        logger.error(f"Error occurred while running Verilator simulation: {build_error}")
 
 def run(module_under_test:str, current_dir:Path, enable_trace:bool):
     """ Runs the test.
@@ -188,10 +188,21 @@ def run(module_under_test:str, current_dir:Path, enable_trace:bool):
             item.unlink()
         elif item.is_dir():
             shutil.rmtree(item)
-    print('Removed all previous sim_build.* files/directories.')
+    try:
+        shutil.rmtree(test_dir / compute_unit_name / 'verilog' / 'program.hex')
+        shutil.rmtree(test_dir / compute_unit_name / 'verilog' / 'data.hex')
+        logger.debug('Removed both previous hex files')
+    except:
+        pass
+    logger.debug('Removed all previous sim_build.* files/directories.')
     
     # Ensure sim_build_dir exists
     sim_build_dir.mkdir(parents=True, exist_ok=True)
+    (test_dir / compute_unit_name / 'verilog').mkdir(parents=True, exist_ok=True)
+
+    # Copy program.hex and data.hex into tb/test/processor/verilog
+    shutil.copy(source_dir / 'program.hex', test_dir / compute_unit_name / 'verilog')
+    shutil.copy(source_dir / 'data.hex', test_dir / compute_unit_name / 'verilog')
 
     module_params = {}
     dependencies = [compute_unit_name, include_dir, source_dir]

@@ -1,6 +1,7 @@
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
+from tqdm import tqdm
 
 @cocotb.test()
 async def test_toplevel_simple_1(dut):
@@ -13,7 +14,7 @@ async def test_toplevel_simple_1(dut):
     cocotb.start_soon(clock.start())
 
     # Apply inputs
-    for _ in range(1000):
+    for _ in tqdm(range(21956000)):
         await RisingEdge(dut.clk_i)
 
     print(dut.clk_i.value)
