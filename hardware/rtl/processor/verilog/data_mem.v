@@ -44,7 +44,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	input [31:0]		write_data;
 	input			memwrite;
 	input			memread;
-	input [3:0]		sign_mask;
+	input [2:0]		sign_mask;
 	output reg [31:0]	read_data;
 	output [7:0]		led;
 	output reg		clk_stall;	//Sets the clock high
@@ -96,7 +96,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	/*
 	 *	Sign_mask buffer
 	 */
-	reg [3:0]		sign_mask_buf;
+	reg [2:0]		sign_mask_buf;
 
 	/*
 	 *	Block memory registers
@@ -165,15 +165,15 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	assign halfword_r0 = (addr_buf_byte_offset[1]==1'b1) ? {buf1, buf0} : write_data_buffer[15:0];
 	assign halfword_r1 = (addr_buf_byte_offset[1]==1'b1) ? write_data_buffer[15:0] : {buf3, buf2};
 
-	/* a is sign_mask_buf[2], b is sign_mask_buf[1], c is sign_mask_buf[0] */
+	/* a is sign_mask_buf[1], b is sign_mask_buf[0] */
 	wire write_select0;
 	wire write_select1;
 
 	wire[31:0] write_out1;
 	wire[31:0] write_out2;
 
-	assign write_select0 = ~sign_mask_buf[2] & sign_mask_buf[1];
-	assign write_select1 = sign_mask_buf[2];
+	assign write_select0 = ~sign_mask_buf[1] & sign_mask_buf[2];
+	assign write_select1 = sign_mask_buf[1];
 
 	assign write_out1 = (write_select0) ? {halfword_r1, halfword_r0} : {byte_r3, byte_r2, byte_r1, byte_r0};
 	assign write_out2 = (write_select0) ? 32'b0 : write_data_buffer;
@@ -193,17 +193,17 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire[31:0] out4;
 	wire[31:0] out5;
 	wire[31:0] out6;
-	/* a is sign_mask_buf[2], b is sign_mask_buf[1], c is sign_mask_buf[0]
+	/* a is sign_mask_buf[1], b is sign_mask_buf[0]
 	 * d is addr_buf_byte_offset[1], e is addr_buf_byte_offset[0]
 	 */
 
-	assign select0 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & ~addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[2] & addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[2] & sign_mask_buf[1] & addr_buf_byte_offset[1]); //~a~b~de + ~ade + ~abd
-	assign select1 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & addr_buf_byte_offset[1]) | (sign_mask_buf[2] & sign_mask_buf[1]); // ~a~bd + ab
+	assign select0 = (~sign_mask_buf[1] & ~sign_mask_buf[0] & ~addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[1] & addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[1] & sign_mask_buf[0] & addr_buf_byte_offset[1]); //~a~b~de + ~ade + ~abd
+	assign select1 = (~sign_mask_buf[1] & ~sign_mask_buf[0] & addr_buf_byte_offset[1]) | (sign_mask_buf[1] & sign_mask_buf[0]); // ~a~bd + ab
 	assign select2 = sign_mask_buf[1]; //b
 
-	assign out1 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{buf1[7]}}, buf1} : {24'b0, buf1}) : ((sign_mask_buf[3]==1'b1) ? {{24{buf0[7]}}, buf0} : {24'b0, buf0});
-	assign out2 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{buf3[7]}}, buf3} : {24'b0, buf3}) : ((sign_mask_buf[3]==1'b1) ? {{24{buf2[7]}}, buf2} : {24'b0, buf2});
-	assign out3 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{16{buf3[7]}}, buf3, buf2} : {16'b0, buf3, buf2}) : ((sign_mask_buf[3]==1'b1) ? {{16{buf1[7]}}, buf1, buf0} : {16'b0, buf1, buf0});
+	assign out1 = (select0) ? ((sign_mask_buf[2]==1'b1) ? {{24{buf1[7]}}, buf1} : {24'b0, buf1}) : ((sign_mask_buf[2]==1'b1) ? {{24{buf0[7]}}, buf0} : {24'b0, buf0});
+	assign out2 = (select0) ? ((sign_mask_buf[2]==1'b1) ? {{24{buf3[7]}}, buf3} : {24'b0, buf3}) : ((sign_mask_buf[2]==1'b1) ? {{24{buf2[7]}}, buf2} : {24'b0, buf2});
+	assign out3 = (select0) ? ((sign_mask_buf[2]==1'b1) ? {{16{buf3[7]}}, buf3, buf2} : {16'b0, buf3, buf2}) : ((sign_mask_buf[2]==1'b1) ? {{16{buf1[7]}}, buf1, buf0} : {16'b0, buf1, buf0});
 	assign out4 = (select0) ? 32'b0 : {buf3, buf2, buf1, buf0};
 
 	assign out5 = (select1) ? out2 : out1;
