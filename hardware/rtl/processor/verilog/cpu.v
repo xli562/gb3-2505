@@ -236,7 +236,7 @@ module cpu(
 			.CSRR(CSRR_signal)
 		);
 
-	mux2to1_10_bit cont_mux(
+	mux2to1_ten_bit cont_mux(
 			.input0({Jalr1, ALUSrc1, Lui1, Auipc1, Branch1, MemRead1, MemWrite1, CSRR_signal, RegWrite1, MemtoReg1, Jump1}),
 			.input1(11'b0),
 			.select(decode_ctrl_mux_sel),
@@ -317,7 +317,7 @@ module cpu(
 		);
 
 	//Execute stage
-	mux2to1_10_bit ex_cont_mux(
+	mux2to1_ten_bit ex_cont_mux(
 			.input0({2'b0, id_ex_out[8:0]}),
 			.input1(1'b0),
 			.select(pcsrc),
