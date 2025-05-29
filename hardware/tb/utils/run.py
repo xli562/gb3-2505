@@ -17,9 +17,8 @@ def _move_waveform_file(test_dir:str, module_under_test:str) -> str:
     """ Moves the waveform file into tb/test/waves, 
     and renames it as e.g. 240923_110745_terminate """
 
-    # filename = module_under_test + '.vcd'
-    filename = datetime.now().strftime('%y%m%d_%H_') + module_under_test + '.vcd'
-    shutil.move(test_dir / compute_unit_name / 'dump.vcd', test_dir / 'waves' / filename)
+    filename = datetime.now().strftime('%y%m%d_%H_%M_%s') + module_under_test + '.fst'
+    shutil.move(test_dir / compute_unit_name / 'dump.fst', test_dir / 'waves' / filename)
 
 def _update_defines(defines_path, output_dir):
     """ Parse Verilog `define`s (including bin/dec/hex literals) into a Python dict
@@ -130,6 +129,7 @@ def _single_test(
                     "-Wno-fatal",
                     "-Wno-lint",
                     "-Wno-style",
+                    '--trace-fst',
                     *extra_build_args,]
             )
         except Exception as build_error:
@@ -179,10 +179,11 @@ def run(module_under_test:str, current_dir:Path, enable_trace:bool):
     # Update defines
     _update_defines(include_dir / 'rv32i-defines.v', current_dir / 'utils')
 
-    # Remove previous sim_build.* and dump.vcd
+    # Remove previous sim_build.* and waveform dump
     dump_vcd = Path(test_dir / compute_unit_name / 'dump.vcd')
-    if dump_vcd.exists():
-        dump_vcd.unlink()
+    dump_fst = Path(test_dir / compute_unit_name / 'dump.fst')
+    dump_vcd.unlink(missing_ok=True)
+    dump_fst.unlink(missing_ok=True)
     for item in current_dir.glob('sim_build.*'):
         if item.is_file():
             item.unlink()
