@@ -237,7 +237,7 @@ module cpu(
 
 	csr_file ControlAndStatus_registers(
 			.clk(clk),
-			.write(mem_wb_out[3]), //TODO
+			.write(mem_wb_out[3]), //TODO:
 			.wrAddr_CSR(mem_wb_out[116:105]),
 			.wrVal_CSR(mem_wb_out[35:4]),
 			.rdAddr_CSR(inst_mux_out[31:20]),
@@ -309,38 +309,32 @@ module cpu(
 			.out(alu_mux_out)
 		);
 
-	// Fast clock is 48 MHz
-	wire [`kCYCLE_COUNTER_WIDTH-1:0] counter_readout;
-	assign led_o[6:1] = led_i[6:1];
-	assign led_o[0] = led_o[7];
+	assign led_o = led_i;
+	// Uncomment for cycle counting and morse output via led
+	// // Fast clock is 48 MHz
+	// wire [`kCYCLE_COUNTER_WIDTH-1:0] counter_readout;
+	// assign led_o[6:1] = led_i[6:1];
+	// assign led_o[0] = led_o[7];
 		
-		
-	wire posedge_retire;
-	reg prev_retire;
-	wire retire = |ex_mem_out[8:0];
-	assign posedge_retire = retire & ~prev_retire;
-	always @(posedge clk) begin
-		prev_retire <= retire;
-	end
-	// Start counting if decimal 100 appears at ALU inputs
-	morse_encoder morse_encoder_0 (
-			.clk_i(clk),
-			.rstn_i(1'b1),
-			.parallel_i(counter_readout),
-			.send_i(led_o[2]),
-			.serial_o(led_o[7])
-		);
 
-	// clk counts clock cycles,
-	// |ex_mem_out[8:0] counts retired instructions.
-	cycle_counter counter_clock_inst (
-			.clk_i(clk),
-			.rstn_i(1'b1),
-			.cycles_i('1),	// Start count at 0
-			.start_i(1'b1),
-			.enable_i(led_o[1]),
-			.readout_o(counter_readout)
-		);
+	// // Start counting if decimal 100 appears at ALU inputs
+	// morse_encoder morse_encoder_0 (
+	// 		.clk_i(clk),
+	// 		.rstn_i(1'b1),
+	// 		.parallel_i(counter_readout),
+	// 		.send_i(led_o[2]),
+	// 		.serial_o(led_o[7])
+	// 	);
+
+	// // clk counts clock cycles,
+	// cycle_counter counter_clock_inst (
+	// 		.clk_i(clk),
+	// 		.rstn_i(1'b1),
+	// 		.cycles_i('1),	// Start count at 1
+	// 		.start_i(1'b1),
+	// 		.enable_i(led_o[1]),
+	// 		.readout_o(counter_readout)
+	// 	);
 
 
 	alu alu_main(

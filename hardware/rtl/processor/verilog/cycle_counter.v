@@ -9,13 +9,13 @@ module cycle_counter (
     input  wire                             clk_i,
     input  wire                             rstn_i,
 
-    input  wire  [`kCYCLE_COUNTER_WIDTH-1:0] cycles_i,
-    input  wire                              start_i,
-    input  wire                              enable_i,
-    output reg  [`kCYCLE_COUNTER_WIDTH-1:0]  readout_o
+    input  wire [`kCYCLE_COUNTER_WIDTH-1:0] cycles_i,
+    input  wire                             start_i,
+    input  wire                             enable_i,
+    output reg  [`kCYCLE_COUNTER_WIDTH-1:0] readout_o
 );
     localparam IDLE      = 1'b0,
-              COUNTDOWN = 1'b1;
+               COUNTDOWN = 1'b1;
     // State names
     reg state;
     reg next_state;

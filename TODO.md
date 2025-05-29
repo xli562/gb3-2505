@@ -11,14 +11,7 @@
     1. (bin-gen.py) build software, generate bitstream, and save as some_software_design.bin for upload later
     1. (upload.py) build software, generate bitstream, and upload to board
 
-## Questions for Tuesday 27
+## Questions for Friday 30
 
-- Bug in baseline RTL code?
-
-```verilog
-/*
- *    LUI, U-Type
- */
-`kRV32I_INSTRUCTION_OPCODE_LUI:
-    ALUCtl = 7'b0000010;
-```
+- What is branch_enable in alu?
+- Is CSRR in the RV32I ISA? Do we really need it for our single-core single-process single-thread processor?
