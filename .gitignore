@@ -24,6 +24,9 @@ scratch/output.txt
 # Testbench outputs
 **/tb/**/sim_build**
 **/tb/**/waves/**
+**/*.fst
+**/*.vcd
+**/*.vvp
 
 # Build artifacts
 **build/**
