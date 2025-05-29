@@ -47,6 +47,7 @@ module top (led);
 	wire		clk_proc;
 	wire		data_clk_stall;
 	
+	wire		local_clk;
 	wire		clk;
 	reg		ENCLKHF		= 1'b1;	// Plock enable
 	reg		CLKHF_POWERUP	= 1'b1;	// Power up the HFOSC circuit
@@ -58,8 +59,25 @@ module top (led);
 	SB_HFOSC #(.CLKHF_DIV("0b11")) OSCInst0 (
 		.CLKHFEN(ENCLKHF),
 		.CLKHFPU(CLKHF_POWERUP),
-		.CLKHF(clk)
+		.CLKHF(local_clk)
 	);
+
+	/*
+	Use a PLL to synthesise the clock signal
+	*/
+	SB_PLL40_CORE #(
+      .FEEDBACK_PATH("SIMPLE"),
+      .PLLOUT_SELECT("GENCLK"),
+      .DIVR(4'b0000),
+      .DIVF(7'b0010000),
+      .DIVQ(3'b101),
+      .FILTER_RANGE(3'b100),
+    ) SB_PLL40_CORE_inst (
+      .RESETB(1'b1),
+      .BYPASS(1'b0),
+      .PLLOUTCORE(clk),
+      .REFERENCECLK(local_clk)
+   );
 
 	/*
 	 *	Memory interface
