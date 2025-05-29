@@ -20,6 +20,7 @@
 scratch/
 scratch/**
 scratch/output.txt
+TODO.md
 
 # Testbench outputs
 **/tb/**/sim_build**
