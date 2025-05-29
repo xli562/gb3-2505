@@ -211,8 +211,11 @@ module cpu(
 	/*
 	 *	IF/ID Pipeline Register
 	 */
+	assign stall_IF = 0;
+	assign enable_if_id = ~stall_IF;
 	if_id if_id_reg(
 			.clk(clk),
+			.enable(enable_if_id),
 			.data_in({inst_mux_out, pc_out}),
 			.data_out(if_id_out)
 		);
@@ -310,8 +313,11 @@ module cpu(
 	assign CSRRI_signal = CSRR_signal & (if_id_out[46]);
 
 	//ID/EX Pipeline Register
+	assign stall_ID = 0;
+	assign enable_id_ex = ~stall_ID;
 	id_ex id_ex_reg(
 			.clk(clk),
+			.enable(enable_id_ex),
 			.data_in({if_id_out[63:52], RegB_AddrFwdFlush_mux_out[4:0], RegA_AddrFwdFlush_mux_out[4:0], if_id_out[43:39], dataMem_sign_mask, alu_ctl, imm_out, RegB_mux_out, RegA_mux_out, if_id_out[31:0], cont_mux_out[10:7], predict, cont_mux_out[6:0]}),
 			.data_out(id_ex_out)
 		);
@@ -360,8 +366,11 @@ module cpu(
 		);
 
 	//EX/MEM Pipeline Register
+	assign stall_EX = 0;
+	assign enable_ex_mem = ~stall_EX;
 	ex_mem ex_mem_reg(
 			.clk(clk),
+			.enable(enable_ex_mem),
 			.data_in({id_ex_out[177:166], id_ex_out[155:151], wb_fwd2_mux_out, lui_result, alu_branch_enable, addr_adder_sum, id_ex_out[43:12], ex_cont_mux_out[8:0]}),
 			.data_out(ex_mem_out)
 		);
@@ -392,8 +401,11 @@ module cpu(
 		);
 
 	//MEM/WB Pipeline Register
+	assign stall_MEM = 0;
+	assign enable_mem_wb = ~stall_MEM;
 	mem_wb mem_wb_reg(
 			.clk(clk),
+			.enable(enable_mem_wb),
 			.data_in({ex_mem_out[154:143], ex_mem_out[142:138], data_mem_out, mem_csrr_mux_out, ex_mem_out[105:74], ex_mem_out[3:0]}),
 			.data_out(mem_wb_out)
 		);
