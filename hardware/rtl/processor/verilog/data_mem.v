@@ -211,28 +211,41 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 
 	assign read_buf = (select2) ? out6 : out5;
 
-	/*
-	 *	This uses Yosys's support for nonzero initial values:
-	 *
-	 *		https://github.com/YosysHQ/yosys/commit/0793f1b196df536975a044a4ce53025c81d00c7f
-	 *
-	 *	Rather than using this simulation construct (`initial`),
-	 *	the design should instead use a reset signal going to
-	 *	modules in the design.
-	 */
-	initial begin
-		$readmemh("verilog/data.hex", data_block);
-		clk_stall = 0;
-	end
+	// Load hex file, raise error if file not found.
+    // integer fh;
+    initial begin
+        // // try to open it for reading
+        // fh = $fopen("verilog/data.hex", "r");
+        // if (fh == 0) begin
+        //     // couldn’t find it: dump an error + cwd, then exit
+        //     $display("%m: ERROR: could not open data.hex at \"verilog/data.hex\"");
+        //     $display(">>> Simulation working directory:");
+        //     // this invokes the shell command `pwd`
+        //     // (Verilator supports $system)
+        //     $system("pwd");
+        //     $finish(1);
+        // end else begin
+        //     // file exists: close the probe handle and actually load it
+        //     $fclose(fh);
+            $readmemh("verilog/data.hex", data_block);
+        // end
+        clk_stall = 0;
+    end
 
-	/*
-	 *	LED register interfacing with I/O
-	 */
-	always @(posedge clk) begin
+    // LED register interfacing with I/O
+    always @(posedge clk) begin
 		if(memwrite == 1'b1 && addr == 32'h2000) begin
 			led_reg <= write_data;
+            if (write_data == 4) begin
+                `ifdef SIMULATION
+                $display("LED WRITE detected: %h at cycle %0d", write_data, tb.cycle_count);
+                $finish;
+                `endif
+            end
 		end
 	end
+
+    
 
 	/*
 	 *	State machine
@@ -253,19 +266,24 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				end
 			end
 
-			READ_BUFFER: begin
-				/*
-				 *	Subtract out the size of the instruction memory.
-				 *	(Bad practice: The constant should be a `define).
-				 */
-				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
-				if(memread_buf==1'b1) begin
-					state <= READ;
-				end
-				else if(memwrite_buf == 1'b1) begin
-					state <= WRITE;
-				end
-			end
+            READ_BUFFER: begin
+                // Subtract out the size of the instruction memory.
+                // (Bad practice: The constant should be a `define).
+                `ifdef SIMULATION
+					// In simulation: testbench provides normalized address, so no offset needed
+					word_buf <= data_block[addr_buf_block_addr];
+				`else
+					// In synthesis: address is physical, so subtract base address offset
+					word_buf <= data_block[addr_buf_block_addr - 32'h1000];
+				`endif
+
+                if(memread_buf==1'b1) begin
+                    state <= READ;
+                end
+                else if(memwrite_buf == 1'b1) begin
+                    state <= WRITE;
+                end
+            end
 
 			READ: begin
 				clk_stall <= 0;
@@ -276,13 +294,15 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 			WRITE: begin
 				clk_stall <= 0;
 
-				/*
-				 *	Subtract out the size of the instruction memory.
-				 *	(Bad practice: The constant should be a `define).
-				 */
-				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
-				state <= IDLE;
-			end
+                // Subtract out the size of the instruction memory.
+                // (Bad practice: The constant should be a `define).
+                `ifdef SIMULATION
+					data_block[addr_buf_block_addr] <= replacement_word;
+				`else
+					data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
+				`endif
+                state <= IDLE;
+            end
 
 		endcase
 	end

@@ -1,12 +1,10 @@
 import numpy as np
 from numpy.random import uniform, random, randint
-from tqdm import tqdm
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
 
-from mods.logging_mods import *
-from mods.quantization_mods import *
+from utils.cocotb_logging import *
 
 
 @cocotb.test()

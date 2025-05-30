@@ -99,8 +99,8 @@ module cpu(
 	wire			RegWrite1;
 	wire			MemWrite1;
 	wire			MemRead1;
-	wire			Branch1;
-	wire			Jump1;
+	wire			branch1;
+	wire			jump1;
 	wire			Jalr1;
 	wire			ALUSrc1;
 	wire			Lui1;
@@ -226,9 +226,9 @@ module cpu(
 			.RegWrite(RegWrite1),
 			.MemWrite(MemWrite1),
 			.MemRead(MemRead1),
-			.Branch(Branch1),
+			.branch(branch1),
 			.ALUSrc(ALUSrc1),
-			.Jump(Jump1),
+			.jump(jump1),
 			.Jalr(Jalr1),
 			.Lui(Lui1),
 			.Auipc(Auipc1),
@@ -237,7 +237,7 @@ module cpu(
 		);
 
 	mux2to1 cont_mux(
-			.input0({21'b0, Jalr1, ALUSrc1, Lui1, Auipc1, Branch1, MemRead1, MemWrite1, CSRR_signal, RegWrite1, MemtoReg1, Jump1}),
+			.input0({21'b0, Jalr1, ALUSrc1, Lui1, Auipc1, branch1, MemRead1, MemWrite1, CSRR_signal, RegWrite1, MemtoReg1, jump1}),
 			.input1(32'b0),
 			.select(decode_ctrl_mux_sel),
 			.out(cont_mux_out)
@@ -272,7 +272,7 @@ module cpu(
 
 	csr_file ControlAndStatus_registers(
 			.clk(clk),
-			.write(mem_wb_out[3]), //TODO
+			.write(mem_wb_out[3]), //TODO:
 			.wrAddr_CSR(mem_wb_out[116:105]),
 			.wrVal_CSR(mem_wb_out[35:4]),
 			.rdAddr_CSR(inst_mux_out[31:20]),
@@ -344,12 +344,40 @@ module cpu(
 			.out(alu_mux_out)
 		);
 
+	assign led_o = led_i;
+	// Uncomment for cycle counting and morse output via led
+	// // Fast clock is 48 MHz
+	// wire [`kCYCLE_COUNTER_WIDTH-1:0] counter_readout;
+	// assign led_o[6:1] = led_i[6:1];
+	// assign led_o[0] = led_o[7];
+		
+
+	// // Start counting if decimal 100 appears at ALU inputs
+	// morse_encoder morse_encoder_0 (
+	// 		.clk_i(clk),
+	// 		.rstn_i(1'b1),
+	// 		.parallel_i(counter_readout),
+	// 		.send_i(led_o[2]),
+	// 		.serial_o(led_o[7])
+	// 	);
+
+	// // clk counts clock cycles,
+	// cycle_counter counter_clock_inst (
+	// 		.clk_i(clk),
+	// 		.rstn_i(1'b1),
+	// 		.cycles_i('1),	// Start count at 1
+	// 		.start_i(1'b1),
+	// 		.enable_i(led_o[1]),
+	// 		.readout_o(counter_readout)
+	// 	);
+
+
 	alu alu_main(
 			.ALUctl(id_ex_out[146:140]),
 			.A(wb_fwd1_mux_out),
 			.B(alu_mux_out),
 			.ALUOut(alu_result),
-			.Branch_Enable(alu_branch_enable)
+			.branch_enable(alu_branch_enable)
 		);
 
 	mux2to1 lui_mux(
@@ -367,14 +395,14 @@ module cpu(
 		);
 
 	//Memory Access Stage
-	branch_decision branch_decide(
-			.Branch(ex_mem_out[6]),
-			.Predicted(ex_mem_out[7]),
-			.Branch_Enable(ex_mem_out[73]),
-			.Jump(ex_mem_out[0]),
-			.Mispredict(mistake_trigger),
-			.Decision(actual_branch_decision),
-			.Branch_Jump_Trigger(pcsrc)
+	branch_decide branch_decide_0(
+			.branch(ex_mem_out[6]),
+			.predicted(ex_mem_out[7]),
+			.branch_enable(ex_mem_out[73]),
+			.jump(ex_mem_out[0]),
+			.mispredict(mistake_trigger),
+			.decision(actual_branch_decision),
+			.branch_jump_trigger(pcsrc)
 		);
 
 	mux2to1 auipc_mux(
