@@ -1,15 +1,16 @@
 # TODO
 
-## Questions for Tuesday 20
+1. Go through & write tests & format RTL source code
+1. Enable .hex files to be loaded in Cocotb/Verilator simulation
+1. Watch Moodle videos: pipelining (14'), sunflower tutorial (28'), verilog tutorial (53'), intro to FPGA tools (5'); read Emma (17p), Amdahl (3p), Reevaluating Amdahl (2p).
+1. Add reset logic for consistent behaviour
+1. Automate with Python (one python file per workflow):
+    1. (sim.py) build software and simulate with Sunflower
+    1. (tb.py) build software and run Cocotb testbench
+    1. (bin-gen.py) build software, generate bitstream, and save as some_software_design.bin for upload later
+    1. (upload.py) build software, generate bitstream, and upload to board
 
-- Is it okay to use additional (also open-source) python packages for automated tests?
+## Questions for Friday 30
 
-- Why does bubblesort do strange things after it terminates? It sorts perfectly, then goes on to flash randomly until it settles on a fixed routine of flashing every 5 seconds or so. Blinking the LED forever upon sort finish proves that sorting _does_ finish.
-
-- Where does the 0x2000 memory address for the green LED come from?
-
-- How to measure average CPI using the oscilloscope? Specifically, how to obtain the cycle count and the instruction count?
-
-- How to obtain GPIO ports for debugging, e.g. clock speed measurement? I noticed that 8 LEDs are toggled in the code (0x00 to 0xFF), but only 1 flashes on the board. Are the other 7 LEDs actually memory-mapped GPIO? How to find them?
-
-- Also, the 1Hz blink works the same when the jumper is removed from J23. This should not happen according to the dev board's manual?
+- What is branch_enable in alu?
+- Is CSRR in the RV32I ISA? Do we really need it for our single-core single-process single-thread processor? --- NO! Get rid of CSRR.
