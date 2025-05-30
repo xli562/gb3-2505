@@ -2,7 +2,7 @@
 `timescale 1ns / 1ps
 `include "../include/rv32i-defines.v"
 
-module adder (
+module subtractor (
     input [31:0] input1,
     input [31:0] input2,
     output [31:0] out
