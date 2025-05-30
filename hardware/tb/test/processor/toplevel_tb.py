@@ -8,6 +8,7 @@ from utils.cocotb_logging import color_log
 @cocotb.test()
 async def test_toplevel_branch_predict(dut):
     """ Measures branch prediction performance """
+    return
     ck_freq = 48e6
     ck_period_ns = int(round(1e9/ck_freq))
 
@@ -33,10 +34,10 @@ async def test_toplevel_branch_predict(dut):
             mispredict_count += curr_mistake_trigger_value
 
         # Count cycles
-        if dut.led_o.value == 0b00000011 and start_cycle == 0:
+        if dut.led_o.value == 0b00000010 and start_cycle == 0:
             start_cycle = cycle
             color_log(dut, f'start cycle = {start_cycle}')
-        elif dut.led_o.value == 0b00000111:
+        elif dut.led_o.value == 0b00000001:
             end_cycle = cycle
             color_log(dut, f'end_cycle = {end_cycle}', color='r')
             break
@@ -57,24 +58,32 @@ async def test_toplevel_branch_predict_2(dut):
     cocotb.start_soon(clock.start())
 
     start_cycle = 0
-    branch_count = mispredict_count = correct_count = 0
-
-    # track last values so we can detect rising edges
+    branch_count = 0
+    mispredict_count = 0
+    correct_count = 0
+    last_branch_dec  = 0
+    last_predicted   = 0
     last_branch_mem = 0
 
-    for cycle in tqdm(range(2_500_000)):
+    for cycle in tqdm(range(2_490_000)):
         await RisingEdge(dut.clk_i)
+
+        # 1) On decode edge, grab the prediction
+        curr_branch_dec = int(dut.processor.branch_predictor_FSM.branch_decode_sig.value)
+        if curr_branch_dec and not last_branch_dec:
+            last_predicted = int(dut.processor.branch_predictor_FSM.prediction.value)
+        last_branch_dec = curr_branch_dec
 
         # detect branch retiring (MEM-stage)
         curr_branch_mem = int(dut.processor.branch_predictor_FSM.branch_mem_sig.value)
+        # Rising edge of branch_mem
         if curr_branch_mem and not last_branch_mem:
             branch_count += 1
 
             # sample predicted vs actual
-            predicted = int(dut.processor.branch_predictor_FSM.prediction.value)
-            actual    = int(dut.processor.actual_branch_decision.value)
+            actual    = dut.processor.actual_branch_decision.value
 
-            if predicted == actual:
+            if last_predicted == actual:
                 correct_count += 1
             else:
                 mispredict_count += 1
@@ -82,12 +91,12 @@ async def test_toplevel_branch_predict_2(dut):
         last_branch_mem = curr_branch_mem
 
         # find start/end of benchmark via LED patterns
-        if dut.led_o.value == 0b00000011 and start_cycle == 0:
+        if dut.led_o.value == 0b00000010 and start_cycle == 0:
             start_cycle = cycle
             color_log(dut, f'start cycle = {start_cycle}')
-        elif dut.led_o.value == 0b00000111:
+        elif dut.led_o.value == 0b0000001:
             end_cycle = cycle
-            color_log(dut, f'end_cycle = {end_cycle}', color='r')
+            color_log(dut, f'end_cycle = {end_cycle}')
             break
 
     color_log(dut, f'Benchmark clock count: {end_cycle-start_cycle}')

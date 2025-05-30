@@ -14,7 +14,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='GB3 Cocotb Verilator runner')
     parser.add_argument('-n', 
                         type=str,
-                        choices = ['adder', 'alu_control'],
+                        choices = ['adder', 'alu_control', 'toplevel'],
                         required=True, 
                         help='Name of module being tested')
     parser.add_argument('-t', type=int, required=True, help='Trace waveform')
