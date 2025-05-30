@@ -7,8 +7,6 @@ module adder (
     input [31:0] input2,
     output [31:0] out
 );
-	wire CO_internal;
-
     SB_MAC16 i_sbmac16 (
         .A(input1[31:16]),
         .B(input1[15:0]),
