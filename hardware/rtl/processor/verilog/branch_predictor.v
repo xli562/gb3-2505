@@ -74,6 +74,14 @@ module branch_predictor(
 
 	reg		branch_mem_sig_reg;
 
+	wire [31:0] branch_addr_calc;
+
+	adder branch_adder(
+			.input1(in_addr),
+			.input2(offset),
+			.out(branch_addr_calc)
+		);
+
 	/*
 	 *	The `initial` statement below uses Yosys's support for nonzero
 	 *	initial values:
@@ -105,6 +113,6 @@ module branch_predictor(
 		end
 	end
 
-	assign branch_addr = in_addr + offset;
+	assign branch_addr = branch_addr_calc;
 	assign prediction = s[1] & branch_decode_sig;
 endmodule
