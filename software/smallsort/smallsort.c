@@ -6,7 +6,7 @@
 
 int main(void) {
   volatile unsigned int *gDebugLedsMemoryMappedRegister = (unsigned int *)0x2000;
-  *gDebugLedsMemoryMappedRegister = 0b00000011;
+  *gDebugLedsMemoryMappedRegister = 0b00000010;
 
   // uchar bsort_input[] = {
   //     0x2e, 0x2e, 0x2e, 0x53, 0x69, 0x6e, 0x67, 0x20
@@ -35,7 +35,34 @@ int main(void) {
     maxindex--;
   }
   
-  *gDebugLedsMemoryMappedRegister = 0b00000100 | *gDebugLedsMemoryMappedRegister;
+  *gDebugLedsMemoryMappedRegister = 0b00000001;
+
+
+  // Flash 1Hz forever
+  enum
+	{
+		kSpinDelay = 400000,
+	};
+
+	while (1)
+	{
+		*gDebugLedsMemoryMappedRegister = 0x01;
+
+		/*
+		 *	Spin
+		 */
+		for (int j = 0; j < kSpinDelay; j++)
+			;
+
+		*gDebugLedsMemoryMappedRegister = 0x00;
+
+		/*
+		 *	Spin
+		 */
+		for (int j = 0; j < kSpinDelay; j++)
+			;
+	}
+
 
   return 0;
 }

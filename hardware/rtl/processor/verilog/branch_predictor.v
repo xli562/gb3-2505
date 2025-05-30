@@ -8,7 +8,7 @@
  *  - Each entry is a 2-bit counter: 00/01 bias not-taken, 10/11 bias taken.
  */
 module branch_predictor #(
-    parameter TABLE_BITS = 1
+    parameter TABLE_BITS = 5
 ) (
     input             clk,
     // actual outcome (from MEM stage)

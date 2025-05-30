@@ -33,23 +33,22 @@ module instruction_memory(addr, out);
 	 */
 
 	// Load hex file, raise error if file not found.
-    integer fh;
+    // integer fh;
     initial begin
-        // try to open it for reading
-        fh = $fopen("verilog/program.hex", "r");
-        if (fh == 0) begin
-            // couldn’t find it: dump an error + cwd, then exit
-            $display("%m: ERROR: could not open program.hex at \"verilog/program.hex\"");
-            $display(">>> Simulation working directory:");
-            // this invokes the shell command `pwd`
-            // (Verilator supports $system)
-            $system("pwd");
-            $finish(1);
-        end else begin
-            // file exists: close the probe handle and actually load it
-            $fclose(fh);
+        // // try to open it for reading
+        // fh = $fopen("verilog/program.hex", "r");
+        // if (fh == 0) begin
+        //     // couldn’t find it: dump an error + cwd, then exit
+        //     $display("%m: ERROR: could not open program.hex at \"verilog/program.hex\"");
+        //     $display(">>> Simulation working directory:");
+        //     // this invokes the shell command `pwd`
+        //     // (Verilator supports $system)
+        //     $system("pwd");
+        //     $finish(1);
+        // end else begin
+        //     // file exists: close the probe handle and actually load it
+        //     $fclose(fh);
             $readmemh("verilog/program.hex", instruction_memory);
-        end
     end
 
 	// multiply addr by 4 (RV32I uses byte addressing, 4 bytes in word)

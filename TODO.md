@@ -14,4 +14,4 @@
 ## Questions for Friday 30
 
 - What is branch_enable in alu?
-- Is CSRR in the RV32I ISA? Do we really need it for our single-core single-process single-thread processor?
+- Is CSRR in the RV32I ISA? Do we really need it for our single-core single-process single-thread processor? --- NO! Get rid of CSRR.

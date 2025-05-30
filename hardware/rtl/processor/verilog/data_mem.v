@@ -146,23 +146,23 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
     assign read_buf = (select2) ? out6 : out5;
 
 	// Load hex file, raise error if file not found.
-    integer fh;
+    // integer fh;
     initial begin
-        // try to open it for reading
-        fh = $fopen("verilog/data.hex", "r");
-        if (fh == 0) begin
-            // couldn’t find it: dump an error + cwd, then exit
-            $display("%m: ERROR: could not open data.hex at \"verilog/data.hex\"");
-            $display(">>> Simulation working directory:");
-            // this invokes the shell command `pwd`
-            // (Verilator supports $system)
-            $system("pwd");
-            $finish(1);
-        end else begin
-            // file exists: close the probe handle and actually load it
-            $fclose(fh);
+        // // try to open it for reading
+        // fh = $fopen("verilog/data.hex", "r");
+        // if (fh == 0) begin
+        //     // couldn’t find it: dump an error + cwd, then exit
+        //     $display("%m: ERROR: could not open data.hex at \"verilog/data.hex\"");
+        //     $display(">>> Simulation working directory:");
+        //     // this invokes the shell command `pwd`
+        //     // (Verilator supports $system)
+        //     $system("pwd");
+        //     $finish(1);
+        // end else begin
+        //     // file exists: close the probe handle and actually load it
+        //     $fclose(fh);
             $readmemh("verilog/data.hex", data_block);
-        end
+        // end
         clk_stall = 0;
     end
 
