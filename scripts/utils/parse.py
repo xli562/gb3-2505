@@ -12,12 +12,12 @@ def parse_sw_dir(current_dir:Path):
 
     return subdirs
 
-def find_most_recent_match(dir_path:Path, query:str) -> Path | None:
+def match_time(dir_path:Path, query:str) -> Path | None:
     """ Find the most recent file matching a timestamp query in a directory.
 
     :param dir_path: (Path) Path to the directory with timestamped files
     :param query: (str) Query string of letters from 'ymdhms' and digits for those fields
-    :return: (Path | None) Most recent matching file or None if no match
+    :return: (Path | None) Name of most recent matching file. None if no match
     """
     dir_path = Path(dir_path)
     files = [p for p in dir_path.iterdir() if p.is_file()]

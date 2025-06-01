@@ -4,7 +4,7 @@
 import subprocess, argcomplete, argparse, shutil
 from pathlib import Path
 from utils.xlogging import get_logger, set_logging_level
-from utils.parse import find_most_recent_match, parse_sw_dir
+from utils.parse import match_time, parse_sw_dir
 from utils.run_process import run_make
 
 
@@ -52,7 +52,7 @@ if __name__ == '__main__':
                     f'make sw={args.sw} install']
         run_make(current_dir, software_dir_docker, commands, args.verbose)
     elif args.src == 'h':
-        program_hex, data_hex = find_most_recent_match(current_dir.parent / 'build' / args.sw, args.time)
+        program_hex, data_hex = match_time(current_dir.parent / 'build' / args.sw, args.time)
         program_hex = build_dir_docker / args.sw / program_hex
         data_hex = build_dir_docker / args.sw / data_hex
         logger.debug(f'Using program = {program_hex.name}')
@@ -60,7 +60,6 @@ if __name__ == '__main__':
         hex_dst_dir = processor_dir / 'verilog'
         subprocess.run(f'rm -f {processor_dir}/programs/*.hex', shell=True, check=True)
         subprocess.run(f'rm -f {processor_dir}/verilog/*.hex', shell=True, check=True)
-        breakpoint()
         shutil.copy(program_hex, hex_dst_dir / 'program.hex')
         shutil.copy(data_hex, hex_dst_dir / 'data.hex')
         commands = ['make hw=processor clean-hw',
@@ -73,7 +72,7 @@ if __name__ == '__main__':
                     f'make sw={args.sw}',
                     f'make sw={args.sw} install']
         run_make(current_dir, software_dir_docker, commands, args.verbose)
-        program_hex, data_hex = find_most_recent_match(current_dir.parent / 'build' / args.sw, args.time)
+        program_hex, data_hex = match_time(current_dir.parent / 'build' / args.sw, args.time)
         program_hex = build_dir_docker / args.sw / program_hex
         data_hex = build_dir_docker / args.sw / data_hex
         logger.debug(f'Using program = {program_hex.name}')
