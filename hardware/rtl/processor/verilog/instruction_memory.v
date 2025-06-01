@@ -48,7 +48,7 @@ module instruction_memory(addr, out);
         // end else begin
         //     // file exists: close the probe handle and actually load it
         //     $fclose(fh);
-            $readmemh("verilog/program.hex", instruction_memory);
+            $readmemh("processor/verilog/program.hex", instruction_memory);
     end
 
 	// multiply addr by 4 (RV32I uses byte addressing, 4 bytes in word)

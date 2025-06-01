@@ -38,30 +38,30 @@ int main(void) {
   *gDebugLedsMemoryMappedRegister = 0b00000001;
 
 
-  // Flash 1Hz forever
-  enum
-	{
-		kSpinDelay = 400000,
-	};
+  // // Flash 1Hz forever
+  // enum
+	// {
+	// 	kSpinDelay = 400000,
+	// };
 
-	while (1)
-	{
-		*gDebugLedsMemoryMappedRegister = 0x01;
+	// while (1)
+	// {
+	// 	*gDebugLedsMemoryMappedRegister = 0x01;
 
-		/*
-		 *	Spin
-		 */
-		for (int j = 0; j < kSpinDelay; j++)
-			;
+	// 	/*
+	// 	 *	Spin
+	// 	 */
+	// 	for (int j = 0; j < kSpinDelay; j++)
+	// 		;
 
-		*gDebugLedsMemoryMappedRegister = 0x00;
+	// 	*gDebugLedsMemoryMappedRegister = 0x00;
 
-		/*
-		 *	Spin
-		 */
-		for (int j = 0; j < kSpinDelay; j++)
-			;
-	}
+	// 	/*
+	// 	 *	Spin
+	// 	 */
+	// 	for (int j = 0; j < kSpinDelay; j++)
+	// 		;
+	// }
 
 
   return 0;

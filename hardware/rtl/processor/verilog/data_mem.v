@@ -161,7 +161,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
         // end else begin
         //     // file exists: close the probe handle and actually load it
         //     $fclose(fh);
-            $readmemh("verilog/data.hex", data_block);
+            $readmemh("processor/verilog/data.hex", data_block);
         // end
         clk_stall = 0;
     end

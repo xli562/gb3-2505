@@ -4,6 +4,14 @@ from utils.xlogging import get_logger
 
 logger = get_logger()
 
+def parse_sw_dir(current_dir:Path):
+    sw_dir = current_dir.parent / 'software'
+    subdirs = []
+    excluded = ('Makefile', 'old', 'include')
+    subdirs = [p.name for p in sw_dir.iterdir() if p.name not in excluded]
+
+    return subdirs
+
 def find_most_recent_match(dir_path:Path, query:str) -> Path | None:
     """ Find the most recent file matching a timestamp query in a directory.
 
