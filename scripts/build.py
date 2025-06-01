@@ -80,7 +80,6 @@ if __name__ == '__main__':
         hex_dst_dir = processor_dir / 'verilog'
         subprocess.run(f'rm -f {processor_dir}/programs/*.hex', shell=True, check=True)
         subprocess.run(f'rm -f {processor_dir}/verilog/*.hex', shell=True, check=True)
-        breakpoint()
         shutil.copy(program_hex, hex_dst_dir / 'program.hex')
         shutil.copy(data_hex, hex_dst_dir / 'data.hex')
         commands = ['make hw=processor clean-hw',
