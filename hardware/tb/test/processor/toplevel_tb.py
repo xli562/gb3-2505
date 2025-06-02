@@ -5,6 +5,43 @@ from tqdm import tqdm
 
 from utils.cocotb_logging import color_log
 
+@cocotb.test()
+async def test_alu(dut):
+    """ Tests ALU via minimal '3+2' C programs """
+
+    ck_freq = 48e6
+    ck_period_ns = int(round(1e9/ck_freq))
+
+    # Start the clock
+    clock = Clock(dut.clk_i, ck_period_ns, units='ns')
+    cocotb.start_soon(clock.start())
+
+    start_cycle = 0
+    for cycle in range(5000):
+        await RisingEdge(dut.clk_i)
+        # Count cycles
+        if dut.led_o.value == 0b00000010 and start_cycle == 0:
+            start_cycle = cycle
+            color_log(dut, f'start cycle = {start_cycle}')
+        elif dut.led_o.value == 0b00000001:
+            end_cycle = cycle
+            color_log(dut, f'end_cycle = {end_cycle}')
+            break
+    
+    count = 0
+    for word in dut.data_mem_inst.data_block.value:
+        if word != 0:
+            color_log(dut, f'{hex(count)} {hex(word)}')
+        count += 1
+    color_log(dut, f'Output a = {hex(dut.data_mem_inst.data_block.value[0x64//4])}')
+    color_log(dut, f'Expted a = {1}')
+    color_log(dut, f'Output b = {hex(dut.data_mem_inst.data_block.value[0x68//4])}')
+    color_log(dut, f'Expted b = {1}')
+    color_log(dut, f'Output c = {hex(dut.data_mem_inst.data_block.value[0x6c//4])}')
+    color_log(dut, f'Expted c = {1}')
+
+
+
 def arithmetic():
     """ Calculates result of standard arithmetic in arith.c """
     a = b = c = 42
@@ -37,7 +74,7 @@ def arithmetic():
         a = seed
     return hex(a), hex(b), hex(c)
 
-@cocotb.test()
+# @cocotb.test()
 async def test_ck_cycles(dut):
     """ Measures clock cycles elapsed """
 

@@ -1,6 +1,11 @@
 # TODO
 
-1. Go through & write tests & format RTL source code
+1. Write c programs such as below, to test ALU function one-by-one.
+
+```c
+int main(void) {int a = 1 + 2;}
+```
+
 1. Add reset logic for consistent behaviour
 
 ## Questions for Friday 30
