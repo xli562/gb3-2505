@@ -43,7 +43,7 @@ def color_log(dut, message:str, color:str=None, log_error=False):
         else:
             dut._log.info(color + str(message) + Style.RESET_ALL)
     except Exception as e:
-        dut._log.error(f'Error color_logging message of type {type(message)}:\n{e}')
+        dut._log.error(f'color_logging {type(message)}:\n{e}')
 
 
 def log_progress(dut, test_count, test_iters, frac=10):

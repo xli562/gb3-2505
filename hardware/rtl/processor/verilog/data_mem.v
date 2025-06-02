@@ -200,13 +200,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 
             READ_BUFFER: begin
                 // Subtract out the size of the instruction memory.
-                `ifdef SIMULATION
-					// In simulation: testbench provides normalized address, so no offset needed
-					word_buf <= data_block[addr_buf_block_addr];
-				`else
-					// In synthesis: address is physical, so subtract base address offset
-					word_buf <= data_block[addr_buf_block_addr - `kINST_MEM_SIZE];
-				`endif
+                word_buf <= data_block[addr_buf_block_addr - `kINST_MEM_SIZE];
 
                 if(memread_buf==1'b1) begin
                     state <= READ;
@@ -226,11 +220,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
                 clk_stall <= 0;
 
                 // Subtract out the size of the instruction memory.
-                `ifdef SIMULATION
-					data_block[addr_buf_block_addr] <= replacement_word;
-				`else
-					data_block[addr_buf_block_addr - `kINST_MEM_SIZE] <= replacement_word;
-				`endif
+                data_block[addr_buf_block_addr - `kINST_MEM_SIZE] <= replacement_word;
                 state <= IDLE;
             end
 

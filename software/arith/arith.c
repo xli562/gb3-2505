@@ -4,14 +4,17 @@
 
 #include "e-types.h"
 
-int a = 0xBEEF;
+int a = 42;
+int b = 42;
+int c = 42;
 
 int main(void) {
   volatile unsigned int *gDebugLedsMemoryMappedRegister = (unsigned int *)0x2000;
   *gDebugLedsMemoryMappedRegister = 0b00000010;
 
   // Standard arithmetic
-  int a, b, c = 0;
+  int bit15, bit13, bit12, bit10, newBit;
+  int seed = 0x5876;
   for (int i = 0; i < 200; i ++) {
     a = a + 5;
     b = a - i;
@@ -34,6 +37,14 @@ int main(void) {
         c --;
         break;
     }
+    // Shuffling (linear feedback shift register random number generator)
+    bit15 = (seed >> 15) & 1;
+    bit13 = (seed >> 13) & 1;
+    bit12 = (seed >> 12) & 1;
+    bit10 = (seed >> 10) & 1;
+    newBit= bit15 ^ bit13 ^ bit12 ^ bit10;
+    seed = (seed >> 1) | (newBit << 15);
+    a = seed;
   }
 
   // Bubblesort

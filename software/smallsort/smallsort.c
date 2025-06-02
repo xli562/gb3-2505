@@ -4,8 +4,6 @@
 
 #include "e-types.h"
 
-int a = 0xBEEF;
-
 int main(void) {
   volatile unsigned int *gDebugLedsMemoryMappedRegister = (unsigned int *)0x2000;
   *gDebugLedsMemoryMappedRegister = 0b00000010;
