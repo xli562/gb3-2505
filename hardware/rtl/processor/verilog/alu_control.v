@@ -68,30 +68,19 @@ module ALUControl(FuncCode, ALUCtl, Opcode);
 		ALUCtl = 7'b0;
 	end
 
-
-
-	/*
-	 *	TODO:
-	 *
-	 *	(1) Please replace the values being assigned to ALUCtl with the corresponding `defines in sail-core-defines.v
-	 *	(2) Please replace the FuncCode constants with the corresponding `defines in sail-core-defines.v
-	 */
-
-
-
 	always @(*) begin
 		case (Opcode)
 			/*
 			 *	LUI, U-Type
 			 */
 			`kRV32I_INSTRUCTION_OPCODE_LUI:
-				ALUCtl = 7'b0000010;
+				ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_AUIPC;
 
 			/*
 			 *	AUIPC, U-Type
 			 */
 			`kRV32I_INSTRUCTION_OPCODE_AUIPC:
-				ALUCtl = 7'b0000010;
+				ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_AUIPC;
 
 			/*
 			 *	JAL, UJ-Type
@@ -111,17 +100,17 @@ module ALUControl(FuncCode, ALUCtl, Opcode);
 			`kRV32I_INSTRUCTION_OPCODE_BRANCH:
 				case (FuncCode[2:0])
 					3'b000:
-						ALUCtl = 7'b0010110; //BEQ conditions
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_BEQ; //BEQ conditions
 					3'b001:
-						ALUCtl = 7'b0100110; //BNE conditions
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_BNE; //BNE conditions
 					3'b100:
-						ALUCtl = 7'b0110110; //BLT conditions
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_BLT; //BLT conditions
 					3'b101:
-						ALUCtl = 7'b1000110; //BGE conditions
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_BGE; //BGE conditions
 					3'b110:
-						ALUCtl = 7'b1010110; //BLTU conditions
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_BLTU; //BLTU conditions
 					3'b111:
-						ALUCtl = 7'b1100110; //BGEU conditions
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_BGEU; //BGEU conditions
 					default:
 						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 				endcase
@@ -132,15 +121,15 @@ module ALUControl(FuncCode, ALUCtl, Opcode);
 			`kRV32I_INSTRUCTION_OPCODE_LOAD:
 				case (FuncCode[2:0])
 					3'b000:
-						ALUCtl = 7'b0000010; //LB
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_LB; //LB
 					3'b001:
-						ALUCtl = 7'b0000010; //LH
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_LH; //LH
 					3'b010:
-						ALUCtl = 7'b0000010; //LW
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_LW; //LW
 					3'b100:
-						ALUCtl = 7'b0000010; //LBU
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_LBU; //LBU
 					3'b101:
-						ALUCtl = 7'b0000010; //LHU
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_LHU; //LHU
 					default:
 						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 				endcase
@@ -151,11 +140,11 @@ module ALUControl(FuncCode, ALUCtl, Opcode);
 			`kRV32I_INSTRUCTION_OPCODE_STORE:
 				case (FuncCode[2:0])
 					3'b000:
-						ALUCtl = 7'b0000010; //SB
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SB; //SB
 					3'b001:
-						ALUCtl = 7'b0000010; //SH
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SH; //SH
 					3'b010:
-						ALUCtl = 7'b0000010; //SW
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SW; //SW
 					default:
 						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 				endcase
@@ -166,25 +155,25 @@ module ALUControl(FuncCode, ALUCtl, Opcode);
 			`kRV32I_INSTRUCTION_OPCODE_IMMOP:
 				case (FuncCode[2:0])
 					3'b000:
-						ALUCtl = 7'b0000010; //ADDI
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ADDI; //ADDI
 					3'b010:
-						ALUCtl = 7'b0000111; //SLTI
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SLTI; //SLTI
 					3'b011:
-						ALUCtl = 7'b0000111; //SLTIU
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SLTIU; //SLTIU
 					3'b100:
-						ALUCtl = 7'b0001000; //XORI
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_XORI; //XORI
 					3'b110:
-						ALUCtl = 7'b0000001; //ORI
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ORI; //ORI
 					3'b111:
-						ALUCtl = 7'b0000000; //ANDI
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ANDI; //ANDI
 					3'b001:
-						ALUCtl = 7'b0000101; //SLLI
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SLLI; //SLLI
 					3'b101:
 						case (FuncCode[3])
 							1'b0:
-								ALUCtl = 7'b0000011; //SRLI
+								ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SRLI; //SRLI
 							1'b1:
-								ALUCtl = 7'b0000100; //SRAI
+								ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SRAI; //SRAI
 							default:
 								ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 						endcase
@@ -200,33 +189,33 @@ module ALUControl(FuncCode, ALUCtl, Opcode);
 					3'b000:
 						case(FuncCode[3])
 							1'b0:
-								ALUCtl = 7'b0000010; //ADD
+								ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ADD; //ADD
 							1'b1:
-								ALUCtl = 7'b0000110; //SUB
+								ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SUB; //SUB
 							default:
 								ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 						endcase
 					3'b001:
-						ALUCtl = 7'b0000101; //SLL
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SLL; //SLL
 					3'b010:
-						ALUCtl = 7'b0000111; //SLT
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SLT; //SLT
 					3'b011:
-						ALUCtl = 7'b0000111; //SLTU
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SLTU; //SLTU
 					3'b100:
-						ALUCtl = 7'b0001000; //XOR
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_XOR; //XOR
 					3'b101:
 						case(FuncCode[3])
 							1'b0:
-								ALUCtl = 7'b0000011; //SRL
+								ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SRL; //SRL
 							1'b1:
-								ALUCtl = 7'b0000100; //SRA untested
+								ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_SRA; //SRA untested
 							default:
 								ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 						endcase
 					3'b110:
-						ALUCtl = 7'b0000001; //OR
+						ALUCtl = 	`kSAIL_MICROARCHITECTURE_ALUCTL_6to0_OR; //OR
 					3'b111:
-						ALUCtl = 7'b0000000; //AND
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_AND; //AND
 					default:
 						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 				endcase
@@ -234,11 +223,11 @@ module ALUControl(FuncCode, ALUCtl, Opcode);
 			`kRV32I_INSTRUCTION_OPCODE_CSRR:
 				case (FuncCode[1:0]) //use lower 2 bits of FuncCode to determine operation
 					2'b01:
-						ALUCtl = 7'b0001001; //CSRRW
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_CSRRW; //CSRRW
 					2'b10:
-						ALUCtl = 7'b0001010; //CSRRS
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_CSRRS; //CSRRS
 					2'b11:
-						ALUCtl = 7'b0001011; //CSRRC
+						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_CSRRC; //CSRRC
 					default:
 						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 				endcase
