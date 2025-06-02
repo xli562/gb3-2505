@@ -312,7 +312,7 @@ module cpu(
 	//ID/EX Pipeline Register
 	id_ex id_ex_reg(
 			.clk(clk),
-			.data_in({if_id_out[63:52], RegB_AddrFwdFlush_mux_out[4:0], RegA_AddrFwdFlush_mux_out[4:0], if_id_out[43:39], dataMem_sign_mask, alu_ctl, imm_out, RegB_mux_out, RegA_mux_out, if_id_out[31:0], cont_mux_out[10:7], predict, cont_mux_out[6:0]}),
+			.data_in({if_id_out[63:52], RegB_AddrFwdFlush_mux_out[4:0], RegA_AddrFwdFlush_mux_out[4:0], if_id_out[43:39], 1'b0, dataMem_sign_mask, alu_ctl, imm_out, RegB_mux_out, RegA_mux_out, if_id_out[31:0], cont_mux_out[10:7], predict, cont_mux_out[6:0]}),
 			.data_out(id_ex_out)
 		);
 
