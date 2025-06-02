@@ -6,6 +6,35 @@ from tqdm import tqdm
 from utils.cocotb_logging import color_log
 
 
+
+@cocotb.test()
+async def test_ck_cycles(dut):
+    """ Measures clock cycles elapsed """
+    ck_freq = 48e6
+    ck_period_ns = int(round(1e9/ck_freq))
+
+    # Start the clock
+    clock = Clock(dut.clk_i, ck_period_ns, units='ns')
+    cocotb.start_soon(clock.start())
+
+    start_cycle = 0
+    for cycle in tqdm(range(213000)):
+        await RisingEdge(dut.clk_i)
+        # Count cycles
+        if dut.led_o.value == 0b00000010 and start_cycle == 0:
+            start_cycle = cycle
+            color_log(dut, f'start cycle = {start_cycle}')
+        elif dut.led_o.value == 0b00000001:
+            end_cycle = cycle
+            color_log(dut, f'end_cycle = {end_cycle}')
+            break
+    
+    color_log(dut, f'Benchmark clock count: {end_cycle-start_cycle}')
+
+    import tkinter, tkinter.messagebox; root=tkinter.Tk(); root.withdraw(); root.attributes('-topmost', True); tkinter.messagebox.showinfo('Done', 'Task complete')
+
+
+
 # @cocotb.test()
 async def test_dhry(dut):
     """ Prints non-zero words in instruction mem """
@@ -62,8 +91,8 @@ async def test_mem(dut):
             color_log(dut, f'end_cycle = {end_cycle}', color='r')
             break
 
-@cocotb.test()
-async def test_toplevel_branch_predict_0(dut):
+# @cocotb.test()
+async def test_branch_predict(dut):
     """ Measures branch prediction performance """
     ck_freq = 48e6
     ck_period_ns = int(round(1e9/ck_freq))

@@ -150,6 +150,8 @@ install: all
 	$(SREC2HEX) -b 16384 $(PROGRAM).sr
 	cp program.hex $(RTL_ROOT)/processor/programs/$(SW)_program.hex
 	cp data.hex $(RTL_ROOT)/processor/programs/$(SW)_data.hex
+	cp program.hex $(RTL_ROOT)/processor/verilog/program.hex
+	cp data.hex $(RTL_ROOT)/processor/verilog/data.hex
 	mv program.hex $(BUILD_ROOT)/$(SW)/$$(date +%y%m%d-%H-%M-%S)_$(SW)_program.hex
 	mv data.hex $(BUILD_ROOT)/$(SW)/$$(date +%y%m%d-%H-%M-%S)_$(SW)_data.hex
 
