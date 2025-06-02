@@ -34,6 +34,7 @@
 **/*.i
 **/*.sr
 **/*.map
+**/*.sym
 hardware/tb/mods/__pycache__/logging_mods.cpython-310.pyc
 
 # Scratch folder

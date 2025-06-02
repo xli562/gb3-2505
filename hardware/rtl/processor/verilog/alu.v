@@ -68,21 +68,6 @@ module alu(
             `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:   ALUOut = A ^ B;
 
             /*
-             *    CSRRW  only
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW: ALUOut = A;
-
-            /*
-             *    CSRRS only
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS: ALUOut = A | B;
-
-            /*
-             *    CSRRC only
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRC: ALUOut = (~A) & B;
-
-            /*
              *    Should never happen.
              */
             default:                    				ALUOut = '0;
@@ -97,7 +82,6 @@ module alu(
             `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:  branch_enable = ($signed(A) >= $signed(B));
             `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU: branch_enable = ($unsigned(A) < $unsigned(B));
             `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU: branch_enable = ($unsigned(A) >= $unsigned(B));
-
             default:                                   branch_enable = 1'b0;
         endcase
     end

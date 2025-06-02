@@ -2,6 +2,7 @@
 `timescale 1ns / 1ps
 `include "../include/rv32i-defines.v"
 
+
 module adder (
     input  wire [31:0] input1,
     input  wire [31:0] input2,

@@ -50,7 +50,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 
     // Block memory registers
     // (Bad practice: The constant for the size should be a `define).
-    reg [31:0]        data_block[0:1023];
+    reg [31:0]        data_block[0:`kDATA_MEM_SIZE-1];
 
     // wire assignments
     wire [9:0]        addr_buf_block_addr;
@@ -161,7 +161,13 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
         // end else begin
         //     // file exists: close the probe handle and actually load it
         //     $fclose(fh);
-            $readmemh("processor/verilog/data.hex", data_block);
+        `ifdef SYNTHESIS
+		$readmemh("processor/verilog/data.hex", data_block);
+		`elsif SIMULATION
+		$readmemh("verilog/data.hex", data_block);
+		`else
+		$error("You must define SYNTHESIS or SIMULATION");
+		`endif
         // end
         clk_stall = 0;
     end
@@ -170,12 +176,6 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
     always @(posedge clk) begin
 		if(memwrite == 1'b1 && addr == 32'h2000) begin
 			led_reg <= write_data;
-            if (write_data == 4) begin
-                `ifdef SIMULATION
-                $display("LED WRITE detected: %h at cycle %0d", write_data, tb.cycle_count);
-                $finish;
-                `endif
-            end
 		end
 	end
 
@@ -200,13 +200,12 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 
             READ_BUFFER: begin
                 // Subtract out the size of the instruction memory.
-                // (Bad practice: The constant should be a `define).
                 `ifdef SIMULATION
 					// In simulation: testbench provides normalized address, so no offset needed
 					word_buf <= data_block[addr_buf_block_addr];
 				`else
 					// In synthesis: address is physical, so subtract base address offset
-					word_buf <= data_block[addr_buf_block_addr - 32'h1000];
+					word_buf <= data_block[addr_buf_block_addr - `kINST_MEM_SIZE];
 				`endif
 
                 if(memread_buf==1'b1) begin
@@ -227,11 +226,10 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
                 clk_stall <= 0;
 
                 // Subtract out the size of the instruction memory.
-                // (Bad practice: The constant should be a `define).
                 `ifdef SIMULATION
 					data_block[addr_buf_block_addr] <= replacement_word;
 				`else
-					data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
+					data_block[addr_buf_block_addr - `kINST_MEM_SIZE] <= replacement_word;
 				`endif
                 state <= IDLE;
             end

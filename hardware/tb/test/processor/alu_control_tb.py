@@ -97,16 +97,6 @@ async def test_all_alu_control_cases(dut):
                 (kRV32I_INSTRUCTION_FUNCCODE_2to0_AND,  kSAIL_MICROARCHITECTURE_ALUCTL_6to0_AND),
             ]
         ],
-
-        # CSR ops
-        *[
-            (kRV32I_INSTRUCTION_OPCODE_CSRR, cc, aluctl)
-            for cc, aluctl in [
-                (kRV32I_INSTRUCTION_FUNCCODE_1to0_CSRRW, kSAIL_MICROARCHITECTURE_ALUCTL_6to0_CSRRW),
-                (kRV32I_INSTRUCTION_FUNCCODE_1to0_CSRRS, kSAIL_MICROARCHITECTURE_ALUCTL_6to0_CSRRS),
-                (kRV32I_INSTRUCTION_FUNCCODE_1to0_CSRRC, kSAIL_MICROARCHITECTURE_ALUCTL_6to0_CSRRC),
-            ]
-        ],
     ]
 
     # Run through every single case

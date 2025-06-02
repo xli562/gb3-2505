@@ -17,14 +17,13 @@ module control_unit(
 		Jalr,
 		Lui,
 		Auipc,
-		Fence,
-		CSRR
+		Fence
 	);
 
 
 	// All RV32I opcode end with 11
 	input	[6:0] opcode;
-	output	MemtoReg, RegWrite, MemWrite, MemRead, branch, ALUSrc, jump, Jalr, Lui, Auipc, Fence, CSRR;
+	output	MemtoReg, RegWrite, MemWrite, MemRead, branch, ALUSrc, jump, Jalr, Lui, Auipc, Fence;
 
 	assign MemtoReg = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[0]);
 
@@ -54,5 +53,4 @@ module control_unit(
 
 	// fence and fence.i have opcode 0001111
 	assign Fence = (~opcode[5]) & opcode[3] & (opcode[2]);
-	assign CSRR = (opcode[6]) & (opcode[4]);
 endmodule

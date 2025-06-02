@@ -1,5 +1,9 @@
 # Testbench Developers' Guide
 
+## Notes
+
+The testbench copies the .hex files each time it is run, so don't worry if hardware/tb/test/processor/verilog/*.hex are not up to date, they will be updated the next time the testbench is run.
+
 ## Testbench code structure
 
 The following draws example from `terminate_tb.py` in branch `vru`, commit `f967d8d09014a1d5a388ed3e25b5a8bf46c18f09`. Every line (excluding some newlines) of the original code can be found below, in sequence.

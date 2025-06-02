@@ -15,7 +15,7 @@ module instruction_memory(addr, out);
 	 *
 	 *	(Bad practice: The constant should be a `define).
 	 */
-	reg [31:0]		instruction_memory[0:2**12-1];
+	reg [31:0]		instruction_memory[0:`kINST_MEM_SIZE-1];
 
 	/*
 	 *	According to the "iCE40 SPRAM Usage Guide" (TN1314 Version 1.0), page 5:
@@ -48,7 +48,13 @@ module instruction_memory(addr, out);
         // end else begin
         //     // file exists: close the probe handle and actually load it
         //     $fclose(fh);
-            $readmemh("processor/verilog/program.hex", instruction_memory);
+        `ifdef SYNTHESIS
+		$readmemh("processor/verilog/program.hex", instruction_memory);
+		`elsif SIMULATION
+		$readmemh("verilog/program.hex", instruction_memory);
+		`else
+		$error("You must define SYNTHESIS or SIMULATION");
+		`endif
     end
 
 	// multiply addr by 4 (RV32I uses byte addressing, 4 bytes in word)

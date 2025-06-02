@@ -1,7 +1,3 @@
-// An extremely minimalist syscalls.c for newlib
-// Based on riscv newlib libgloss/riscv/sys_*.c
-// Written by Clifford Wolf.
-
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
@@ -77,11 +73,11 @@ int _fstat(int file, struct stat *st)
 
 void *_sbrk(ptrdiff_t incr)
 {
-	extern unsigned char _end[];   // Defined by linker
+	extern unsigned char _ebss[];   // Defined by linker
 	static unsigned long heap_end;
 
 	if (heap_end == 0)
-		heap_end = (long)_end;
+		heap_end = (long)_ebss;
 
 	heap_end += incr;
 	return (void *)(heap_end - incr);

@@ -114,6 +114,8 @@ $(INIT).o: $(INIT).S
 # Link both of the .o files
 $(PROGRAM): $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o $@ -lc -lm -lgcc
+	@echo "Generating symbol map for $(PROGRAM)"
+	$(NM) -C $@ > $@.sym
 
 # Convert the ELF to a .sr file, to be translated to .hex later by srec2hex
 $(PROGRAM).sr:$(PROGRAM)

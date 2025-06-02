@@ -130,6 +130,7 @@ def _single_test(
                     "-Wno-lint",
                     "-Wno-style",
                     '--trace-fst',
+                    '-DSIMULATION',
                     *extra_build_args,]
             )
         except Exception as build_error:

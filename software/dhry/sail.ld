@@ -10,7 +10,7 @@ SECTIONS
 	{
 		_text = . ;
 		*(.text) 
-		. = 0x1000;
+		. = 0x2100;
 		*(.strings)
 		_etext = . ;
 	}
@@ -21,7 +21,9 @@ SECTIONS
 	}
 
 	.bss . :
-	{ 
+	{ 	
+		_bss = .;
 		*(.bss)
+		_ebss = .;
 	}
 }
