@@ -53,7 +53,7 @@ module cpu(
 	 *	Pipeline Registers
 	 */
 	wire [63:0]		if_id_out;
-	wire [177:0]		id_ex_out;
+	wire [187:0]		id_ex_out;
 	wire [154:0]		ex_mem_out;
 	wire [116:0]		mem_wb_out;
 
@@ -90,7 +90,8 @@ module cpu(
 	wire [31:0]		addr_adder_mux_out;
 	wire [31:0]		alu_mux_out;
 	wire [31:0]		addr_adder_sum;
-	wire [6:0]		alu_ctl;
+	wire [9:0]		alu_ctl;
+	wire [6:0]		bru_ctl;
 	wire			alu_branch_enable;
 	wire [31:0]		alu_result;
 	wire [31:0]		lui_result;
@@ -221,7 +222,8 @@ module cpu(
 	alu_control alu_control(
 			.Opcode(if_id_out[38:32]),
 			.FuncCode({if_id_out[62], if_id_out[46:44]}),
-			.ALUCtl(alu_ctl)
+			.ALUCtl(alu_ctl),
+			.BRUCtl(bru_ctl)
 		);
 
 	sign_mask_gen sign_mask_gen_inst(
@@ -236,7 +238,7 @@ module cpu(
 	//ID/EX Pipeline Register
 	id_ex id_ex_reg(
 			.clk(clk),
-			.data_in({if_id_out[63:52], RegB_AddrFwdFlush_mux_out[4:0], RegA_AddrFwdFlush_mux_out[4:0], if_id_out[43:39], dataMem_sign_mask, alu_ctl, imm_out, regB_out, RegA_mux_out, if_id_out[31:0], cont_mux_out[10:7], predict, cont_mux_out[6:0]}),
+			.data_in({bru_ctl[6:0], alu_ctl[9:7], if_id_out[63:52], RegB_AddrFwdFlush_mux_out[4:0], RegA_AddrFwdFlush_mux_out[4:0], if_id_out[43:39], dataMem_sign_mask, alu_ctl[6:0], imm_out, regB_out, RegA_mux_out, if_id_out[31:0], cont_mux_out[10:7], predict, cont_mux_out[6:0]}),
 			.data_out(id_ex_out)
 		);
 
@@ -297,7 +299,8 @@ module cpu(
 
 
 	alu alu_main(
-			.ALUctl(id_ex_out[146:140]),
+			.ALUctl({id_ex_out[180:178], id_ex_out[146:140]}),
+			.BRUctl(id_ex_out[187:181]),
 			.A(wb_fwd1_mux_out),
 			.B(alu_mux_out),
 			.ALUOut(alu_result),

@@ -2,6 +2,9 @@
 
 1. Write c programs such as below, to test ALU function one-by-one.
 
+ADD done
+SUB done
+
 ```c
 int main(void) {int a = 1 + 2;}
 ```

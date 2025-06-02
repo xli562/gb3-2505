@@ -8,81 +8,41 @@
  * fed to the ALU.
  */
 module alu(
-    input  wire [6:0]  ALUctl,
+    input  wire  [9:0] ALUctl,
+    input  wire  [6:0] BRUctl,
     input  wire [31:0] A,
     input  wire [31:0] B,
     output reg  [31:0] ALUOut,
     output reg         branch_enable
-);
-    // TODO: Use reset signal instead of initial
+);  
+    // Give signed version of A and B
+    wire signed [31:0] sA = A;
+    wire signed [31:0] sB = B;
+    wire        [31:0] srl = sA >>  B[4:0]; // SRL
+    wire signed [31:0] sra = sA >>> B[4:0]; // SRA
+
     initial begin
         ALUOut = 32'b0;
         branch_enable = 1'b0;
     end
 
-    always @(ALUctl, A, B) begin
-        case (ALUctl[3:0])
-            /*
-             *    AND (the fields also match ANDI and LUI)
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND:   ALUOut = A & B;
+    wire        cmp = (ALUctl[0] & (A < B)) ^ (ALUctl[1] & (sA < sB)); // SLT, SLTU
+    wire [31:0] add = ALUctl[3] ? (A - B) : ALUctl[2] ? (A + B) : 0;   // ADD, SUB
+    wire [31:0] lgc = ALUctl[4] ? (A ^ B) : ALUctl[5] ? (A | B) : ALUctl[6] ? (A & B) : 0; // Bitwise logic, RCoreP also uses imm here
+    wire [31:0] sf1 = ALUctl[7] ? (A << B[4:0]) : 0;
+    wire [31:0] sf2 = ALUctl[8] ? srl           : 0;
+    wire [31:0] sf3 = ALUctl[9] ? sra           : 0;
 
-            /*
-             *    OR (the fields also match ORI)
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_OR:    ALUOut = A | B;
+    assign ALUOut[0]    = cmp ^ (add[0] ^ lgc[0]) ^ (sf1[0] ^ ((ALUctl[9] | ALUctl[8]) & srl[0]));
+    assign ALUOut[31:1] = add[31:1] ^ lgc[31:1] ^ (sf1[31:1] ^ sf2[31:1] ^ sf3[31:1]);
 
-            /*
-             *    ADD (the fields also match AUIPC, all loads, all stores, and ADDI)
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:   ALUOut = A + B;
+    wire beq  = BRUctl[0] & ( A ==  B);
+    wire bne  = BRUctl[1] & ( A !=  B);
+    wire blt  = BRUctl[2] & (sA <  sB);
+    wire bge  = BRUctl[3] & (sA >  sB);
+    wire bltu = BRUctl[4] & ( A <   B);
+    wire bgeu = BRUctl[5] & ( A >   B);
 
-            /*
-             *    SUBTRACT (the fields also matches all branches)
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:   ALUOut = A - B;
 
-            /*
-             *    SLT (the fields also matches all the other SLT variants)
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:   ALUOut = $signed(A) < $signed(B) ? 32'b1 : 32'b0;
-
-            /*
-             *    SRL (the fields also matches the other SRL variants)
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRL:   ALUOut = A >> B[4:0];
-
-            /*
-             *    SRA (the fields also matches the other SRA variants)
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRA:   ALUOut = $signed(A) >>> B[4:0];
-
-            /*
-             *    SLL (the fields also match the other SLL variants)
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLL:   ALUOut = A << B[4:0];
-
-            /*
-             *    XOR (the fields also match other XOR variants)
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:   ALUOut = A ^ B;
-
-            /*
-             *    Should never happen.
-             */
-            default:                    				ALUOut = '0;
-        endcase
-    end
-
-    always @(ALUctl, ALUOut, A, B) begin
-        case (ALUctl[6:4])
-            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ:  branch_enable = (ALUOut == 0);
-            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE:  branch_enable = !(ALUOut == 0);
-            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:  branch_enable = ($signed(A) < $signed(B));
-            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:  branch_enable = ($signed(A) >= $signed(B));
-            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU: branch_enable = ($unsigned(A) < $unsigned(B));
-            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU: branch_enable = ($unsigned(A) >= $unsigned(B));
-            default:                                   branch_enable = 1'b0;
-        endcase
-    end
+    assign branch_enable = beq | bne | blt | bge | bltu | bgeu;
 endmodule
