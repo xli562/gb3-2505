@@ -293,14 +293,14 @@ module cpu(
 			.out(RegB_mux_out)
 		);
 
-	mux2to1_five_bit RegA_AddrFwdFlush_mux( //TODO cleanup
+	mux2to1_five_bit RegA_AddrFwdFlush_mux(
 			.input0(if_id_out[51:47]),
 			.input1(5'b0),
 			.select(CSRRI_signal),
 			.out(RegA_AddrFwdFlush_mux_out)
 		);
 
-	mux2to1_five_bit RegB_AddrFwdFlush_mux( //TODO cleanup
+	mux2to1_five_bit RegB_AddrFwdFlush_mux(
 			.input0(if_id_out[56:52]),
 			.input1(5'b0),
 			.select(CSRR_signal),
