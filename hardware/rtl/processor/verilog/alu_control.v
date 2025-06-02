@@ -220,18 +220,6 @@ module ALUControl(FuncCode, ALUCtl, Opcode);
 						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 				endcase
 
-			`kRV32I_INSTRUCTION_OPCODE_CSRR:
-				case (FuncCode[1:0]) //use lower 2 bits of FuncCode to determine operation
-					2'b01:
-						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_CSRRW; //CSRRW
-					2'b10:
-						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_CSRRS; //CSRRS
-					2'b11:
-						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_CSRRC; //CSRRC
-					default:
-						ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
-				endcase
-
 			default:
 				ALUCtl = `kSAIL_MICROARCHITECTURE_ALUCTL_6to0_ILLEGAL;
 		endcase

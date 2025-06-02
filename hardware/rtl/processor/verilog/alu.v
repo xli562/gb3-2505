@@ -1,7 +1,6 @@
 `default_nettype none
 `timescale 1ns / 1ps
 `include "../include/rv32i-defines.v"
-`include "./subtractor.v"
 
 
 /*
@@ -91,21 +90,6 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			 *	XOR (the fields also match other XOR variants)
 			 */
 			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:	ALUOut = A ^ B;
-
-			/*
-			 *	CSRRW  only
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW:	ALUOut = A;
-
-			/*
-			 *	CSRRS only
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS:	ALUOut = A | B;
-
-			/*
-			 *	CSRRC only
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRC:	ALUOut = (~A) & B;
 
 			/*
 			 *	Should never happen.
