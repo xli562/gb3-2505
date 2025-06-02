@@ -16,12 +16,6 @@
 .DS_Store
 .DS_Store**
 
-# Scratch folder
-scratch/
-scratch/**
-scratch/output.txt
-TODO.md
-
 # Testbench outputs
 **/tb/**/sim_build**
 **/tb/**/waves/**
@@ -41,3 +35,9 @@ TODO.md
 **/*.sr
 **/*.map
 hardware/tb/mods/__pycache__/logging_mods.cpython-310.pyc
+
+# Scratch folder
+scratch/
+scratch/**
+scratch/
+TODO.md
