@@ -68,6 +68,15 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	parameter		WRITE = 3;
 
 	/*
+	 *	Previous input signals to see if inputs have changed for clock gating.
+	 */
+	reg	[31:0]		prev_addr;
+	reg [31:0]		prev_write_data;
+	reg				prev_memwrite;
+	reg				prev_memread;
+	reg [3:0]		prev_sign_mask;
+
+	/*
 	 *	Line buffer
 	 */
 	reg [31:0]		word_buf;
@@ -234,57 +243,67 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 		end
 	end
 
+	always @(negedge clk) begin
+		prev_addr <= addr;
+		prev_write_data <= write_data;
+		prev_memwrite <= memwrite;
+		prev_memread <= memread;
+		prev_sign_mask <= sign_mask;
+	end
+
 	/*
 	 *	State machine
 	 */
 	always @(posedge clk) begin
-		case (state)
-			IDLE: begin
-				clk_stall <= 0;
-				memread_buf <= memread;
-				memwrite_buf <= memwrite;
-				write_data_buffer <= write_data;
-				addr_buf <= addr;
-				sign_mask_buf <= sign_mask;
+		if(!(addr == prev_addr && write_data == prev_write_data && memwrite == prev_memwrite && memread == prev_memread && sign_mask == prev_sign_mask)) begin
+			case (state)
+				IDLE: begin
+					clk_stall <= 0;
+					memread_buf <= memread;
+					memwrite_buf <= memwrite;
+					write_data_buffer <= write_data;
+					addr_buf <= addr;
+					sign_mask_buf <= sign_mask;
 
-				if(memwrite==1'b1 || memread==1'b1) begin
-					state <= READ_BUFFER;
-					clk_stall <= 1;
+					if(memwrite==1'b1 || memread==1'b1) begin
+						state <= READ_BUFFER;
+						clk_stall <= 1;
+					end
 				end
-			end
 
-			READ_BUFFER: begin
-				/*
-				 *	Subtract out the size of the instruction memory.
-				 *	(Bad practice: The constant should be a `define).
-				 */
-				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
-				if(memread_buf==1'b1) begin
-					state <= READ;
+				READ_BUFFER: begin
+					/*
+					*	Subtract out the size of the instruction memory.
+					*	(Bad practice: The constant should be a `define).
+					*/
+					word_buf <= data_block[addr_buf_block_addr - 32'h1000];
+					if(memread_buf==1'b1) begin
+						state <= READ;
+					end
+					else if(memwrite_buf == 1'b1) begin
+						state <= WRITE;
+					end
 				end
-				else if(memwrite_buf == 1'b1) begin
-					state <= WRITE;
+
+				READ: begin
+					clk_stall <= 0;
+					read_data <= read_buf;
+					state <= IDLE;
 				end
-			end
 
-			READ: begin
-				clk_stall <= 0;
-				read_data <= read_buf;
-				state <= IDLE;
-			end
+				WRITE: begin
+					clk_stall <= 0;
 
-			WRITE: begin
-				clk_stall <= 0;
+					/*
+					*	Subtract out the size of the instruction memory.
+					*	(Bad practice: The constant should be a `define).
+					*/
+					data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
+					state <= IDLE;
+				end
 
-				/*
-				 *	Subtract out the size of the instruction memory.
-				 *	(Bad practice: The constant should be a `define).
-				 */
-				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
-				state <= IDLE;
-			end
-
-		endcase
+			endcase
+		end
 	end
 
 	/*

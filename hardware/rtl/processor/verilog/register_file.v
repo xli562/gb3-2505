@@ -93,7 +93,7 @@ module regfile(clk, write, wrAddr, wrData, rdAddrA, rdDataA, rdAddrB, rdDataB);
 	end
 
 	always @(posedge clk) begin
-		if (write==1'b1 && wrAddr!=5'b0) begin
+		if (write==1'b1) begin
 			regfile[wrAddr] <= wrData;
 		end
 		wrAddr_buf	<= wrAddr;
