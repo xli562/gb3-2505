@@ -139,18 +139,22 @@ $(PROGRAM-SF).sr:$(PROGRAM-SF)
 	$(OBJCOPY) -O srec $(PROGRAM-SF) $@
 
 # srec2hex splits the S-Record into program.hex & data.hex, 
-# each aligned to 4 KiB blocks (-b 4096)
+# each aligned to 4 KiB blocks (-b 4096x4 = 16384)
 # Copies those two Intel-Hex files into /processor/programs/ 
 # so the FPGA loader can pick them up.
 install: all
 	mkdir -p $(RTL_ROOT)/processor/programs/
-	$(SREC2HEX) -b 4096 $(PROGRAM).sr
-	mv program.hex $(RTL_ROOT)/processor/programs/$(SW)_program.hex
-	mv data.hex $(RTL_ROOT)/processor/programs/$(SW)_data.hex
+	mkdir -p $(BUILD_ROOT)/$(SW)/
+	$(SREC2HEX) -b 16384 $(PROGRAM).sr
+	cp program.hex $(RTL_ROOT)/processor/programs/$(SW)_program.hex
+	cp data.hex $(RTL_ROOT)/processor/programs/$(SW)_data.hex
+	mv program.hex $(BUILD_ROOT)/$(SW)/$$(date +%y%m%d-%H-%M-%S)_$(SW)_program.hex
+	mv data.hex $(BUILD_ROOT)/$(SW)/$$(date +%y%m%d-%H-%M-%S)_$(SW)_data.hex
 
 # Clean the directory, delete any build files.
+# Does not affect .hex in $(BUILD_ROOT)/$(SW)/
 clean:
 	$(RM) $(PROGRAM-SF) $(PROGRAM-SF).sr $(PROGRAM-SF).map; \
 	$(RM) $(PROGRAM) $(PROGRAM).sr $(PROGRAM).map; \
 	cd $(SW_ROOT); \
-	$(RM) $(INIT).i $(INIT).i **.o 
+	$(RM) $(INIT).i $(INIT-SF).i *.o 

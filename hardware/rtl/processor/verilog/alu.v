@@ -2,7 +2,6 @@
 `timescale 1ns / 1ps
 `include "../include/rv32i-defines.v"
 
-
 /*
  *	Not all instructions are fed to the ALU. As a result, the ALUctl
  *	field is only unique across the instructions that are actually
@@ -65,38 +64,42 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			 *	SUBTRACT (the fields also matches all branches)
 			 */
 			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	ALUOut = alu_subtraction;
+            /*
+             *    SLT (the fields also matches all the other SLT variants)
+             */
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:   ALUOut = $signed(A) < $signed(B) ? 32'b1 : 32'b0;
 
-			/*
-			 *	SLT (the fields also matches all the other SLT variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = $signed(A) < $signed(B) ? 32'b1 : 32'b0;
+            /*
+             *    SRL (the fields also matches the other SRL variants)
+             */
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRL:   ALUOut = A >> B[4:0];
 
-			/*
-			 *	SRL (the fields also matches the other SRL variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRL:	ALUOut = A >> B[4:0];
+            /*
+             *    XOR (the fields also match other XOR variants)
+             */
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:   ALUOut = A ^ B;
 
-			/*
-			 *	SRA (the fields also matches the other SRA variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRA:	ALUOut = $signed(A) >>> B[4:0];
+            /*
+             *    CSRRW  only
+             */
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW: ALUOut = A;
 
-			/*
-			 *	SLL (the fields also match the other SLL variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLL:	ALUOut = A << B[4:0];
+            /*
+             *    CSRRS only
+             */
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS: ALUOut = A | B;
 
-			/*
-			 *	XOR (the fields also match other XOR variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:	ALUOut = A ^ B;
+            /*
+             *    CSRRC only
+             */
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRC: ALUOut = (~A) & B;
 
-			/*
-			 *	Should never happen.
-			 */
-			default:					ALUOut = 0;
-		endcase
-	end
+            /*
+             *    Should never happen.
+             */
+            default:                    				ALUOut = '0;
+        endcase
+    end
 
 	always @(ALUctl, ALUOut, A, B) begin
 		case (ALUctl[6:4])

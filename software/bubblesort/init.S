@@ -6,7 +6,7 @@ _start:
 init:
 	nop
 
-	li		sp, 5120		# 4096 (== 0x1000) for the code section plus another 1000 for the data section
+	li		sp, 20480		# 4 times (4096 (== 0x1000) for the code section plus another 1000 for the data section)
 
 	# li		x5, 0			# Clear reg x5
 	# li		x6, 8192		# 8192 (= 0x2000), Memory-mapped address for LEDs

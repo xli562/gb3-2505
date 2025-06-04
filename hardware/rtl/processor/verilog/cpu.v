@@ -1,46 +1,6 @@
-/*
-	Authored 2018-2019, Ryan Voo.
-
-	All rights reserved.
-	Redistribution and use in source and binary forms, with or without
-	modification, are permitted provided that the following conditions
-	are met:
-
-	*	Redistributions of source code must retain the above
-		copyright notice, this list of conditions and the following
-		disclaimer.
-
-	*	Redistributions in binary form must reproduce the above
-		copyright notice, this list of conditions and the following
-		disclaimer in the documentation and/or other materials
-		provided with the distribution.
-
-	*	Neither the name of the author nor the names of its
-		contributors may be used to endorse or promote products
-		derived from this software without specific prior written
-		permission.
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-	CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-	LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-	ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-	POSSIBILITY OF SUCH DAMAGE.
-*/
-
-
-
-/*
- *	cpu top-level
- */
-
-
+`default_nettype none
+`timescale 1ns / 1ps
+`include "../include/rv32i-defines.v"
 
 module cpu(
 			clk,
@@ -51,7 +11,9 @@ module cpu(
 			data_mem_WrData,
 			data_mem_memwrite,
 			data_mem_memread,
-			data_mem_sign_mask
+			data_mem_sign_mask,
+			led_i,
+			led_o
 		);
 	/*
 	 *	Input Clock
@@ -73,6 +35,9 @@ module cpu(
 	output			data_mem_memwrite;
 	output			data_mem_memread;
 	output [2:0]		data_mem_sign_mask;
+
+	input  [7:0] led_i;
+	output  [7:0] led_o;
 
 	/*
 	 *	Program Counter
@@ -217,7 +182,7 @@ module cpu(
 	/*
 	 *	Decode Stage
 	 */
-	control control_unit(
+	control_unit control_unit_inst(
 			.opcode({if_id_out[38:32]}),
 			.MemtoReg(MemtoReg1),
 			.RegWrite(RegWrite1),
@@ -255,7 +220,7 @@ module cpu(
 			.imm(imm_out)
 		);
 
-	ALUControl alu_control(
+	alu_control alu_control(
 			.Opcode(if_id_out[38:32]),
 			.FuncCode({if_id_out[62], if_id_out[46:44]}),
 			.ALUCtl(alu_ctl)
@@ -306,6 +271,34 @@ module cpu(
 			.out(alu_mux_out)
 		);
 
+	assign led_o = led_i;
+	// Uncomment for cycle counting and morse output via led
+	// // Fast clock is 48 MHz
+	// wire [`kCYCLE_COUNTER_WIDTH-1:0] counter_readout;
+	// assign led_o[6:1] = led_i[6:1];
+	// assign led_o[0] = led_o[7];
+		
+
+	// // Start counting if decimal 100 appears at ALU inputs
+	// morse_encoder morse_encoder_0 (
+	// 		.clk_i(clk),
+	// 		.rstn_i(1'b1),
+	// 		.parallel_i(counter_readout),
+	// 		.send_i(led_o[2]),
+	// 		.serial_o(led_o[7])
+	// 	);
+
+	// // clk counts clock cycles,
+	// cycle_counter counter_clock_inst (
+	// 		.clk_i(clk),
+	// 		.rstn_i(1'b1),
+	// 		.cycles_i('1),	// Start count at 1
+	// 		.start_i(1'b1),
+	// 		.enable_i(led_o[1]),
+	// 		.readout_o(counter_readout)
+	// 	);
+
+
 	alu alu_main(
 			.ALUctl(id_ex_out[146:140]),
 			.A(wb_fwd1_mux_out),
@@ -329,14 +322,14 @@ module cpu(
 		);
 
 	//Memory Access Stage
-	branch_decision branch_decide(
+	branch_decide branch_decide_0(
 			.Branch(ex_mem_out[6]),
-			.Predicted(ex_mem_out[7]),
-			.Branch_Enable(ex_mem_out[73]),
+			.predicted(ex_mem_out[7]),
+			.branch_enable(ex_mem_out[73]),
 			.Jump(ex_mem_out[0]),
-			.Mispredict(mistake_trigger),
-			.Decision(actual_branch_decision),
-			.Branch_Jump_Trigger(pcsrc)
+			.mispredict(mistake_trigger),
+			.decision(actual_branch_decision),
+			.branch_jump_trigger(pcsrc)
 		);
 
 	mux2to1 auipc_mux(
@@ -369,7 +362,7 @@ module cpu(
 		);
 
 	//Forwarding Unit
-	ForwardingUnit forwarding_unit(
+	forwarding_unit forwarding_unit(
 			.rs1(id_ex_out[160:156]),
 			.rs2(id_ex_out[165:161]),
 			.MEM_RegWriteAddr(ex_mem_out[142:138]),
