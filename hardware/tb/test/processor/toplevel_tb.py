@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from utils.cocotb_logging import color_log
 
-@cocotb.test()
+# @cocotb.test()
 async def test_alu(dut):
     """ Tests ALU via minimal '3+2' C programs """
 
@@ -74,7 +74,7 @@ def arithmetic():
         a = seed
     return hex(a), hex(b), hex(c)
 
-# @cocotb.test()
+@cocotb.test()
 async def test_ck_cycles(dut):
     """ Measures clock cycles elapsed """
 

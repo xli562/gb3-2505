@@ -21,7 +21,7 @@ all:
 # Synthesize rtl into .json netlist
 	yosys -q $(RTL_ROOT)/$(HW)/$(DESIGN).ys
 # Place-and-route, translates the .json netlist to .asc bitstream
-	nextpnr-ice40 --up5k --package uwg30 --json $(HW)/$(DESIGN).json --pcf $(HW)/$(DESIGN).pcf --asc $(HW)/$(DESIGN).asc
+	nextpnr-ice40 --up5k --package uwg30 --json $(HW)/$(DESIGN).json --pcf $(HW)/$(DESIGN).pcf --asc $(HW)/$(DESIGN).asc --freq 6
 # Timing analysis for the .asc bitstream
 	icetime -p $(HW)/$(DESIGN).pcf -P uwg30 -d up5k -t $(HW)/$(DESIGN).asc
 # Pack into .bin bitstream

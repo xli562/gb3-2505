@@ -2,9 +2,8 @@
 
 1. Write c programs such as below, to test ALU function one-by-one.
 
-```c
-int main(void) {int a = 1 + 2;}
-```
+ADD done
+SUB done
 
 1. Add reset logic for consistent behaviour
 
