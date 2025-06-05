@@ -38,7 +38,7 @@ module toplevel (led_o);
 		SB_PLL40_CORE #(
 			.FEEDBACK_PATH("SIMPLE"),
 			.PLLOUT_SELECT("GENCLK"),
-			.DIVR(4'b0000),
+			.DIVR(4'b1111),
 			.DIVF(7'b0000000),
 			.DIVQ(3'b111),
 			.FILTER_RANGE(3'b100),
