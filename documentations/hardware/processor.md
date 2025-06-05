@@ -23,7 +23,6 @@ The verilog modules have a (non-comprehensive) test suite which can be run using
 - `mux2to1`: 2-to-1 mux with word inputs, word output and 1-bit select.
 - `sign_mask_gen`: for sign-extending.
 
-
 ### Clocked
 
 - (?)`branch_predictor`: does some sort of branch prediction. The prediction passes thru some LUTs to determine if it is valid, before reaching the PC.

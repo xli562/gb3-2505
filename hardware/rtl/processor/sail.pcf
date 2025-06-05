@@ -2,6 +2,9 @@
 #	PCF file for the iCE40 Ultra Plus FPGA (uwg30 package) on MDP board
 #	On the MDP board, pin D3 of the FPGA is connected to LED D14.
 #
+#   Possible available buttons:
+#   Page 27, SW4
+#   Page 34 (common components), SW5
 
 set_io led_o[7] E4 #9B
 set_io led_o[6] D5 #2A

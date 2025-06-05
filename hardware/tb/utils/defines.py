@@ -1,6 +1,6 @@
 # This file is updated for each run, by runner._update_defines
 kCYCLE_COUNTER_WIDTH = 42
-kINST_MEM_SIZE = 8192
+kINST_MEM_SIZE = 4096
 kDATA_MEM_SIZE = 1024
 kRV32I_INSTRUCTION_OPCODE_LUI = 55
 kRV32I_INSTRUCTION_OPCODE_AUIPC = 23

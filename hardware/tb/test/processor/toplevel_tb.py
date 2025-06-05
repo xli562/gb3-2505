@@ -13,12 +13,12 @@ async def test_alu(dut):
     ck_period_ns = int(round(1e9/ck_freq))
 
     # Start the clock
-    clock = Clock(dut.clk_i, ck_period_ns, units='ns')
+    clock = Clock(dut.clk_s, ck_period_ns, units='ns')
     cocotb.start_soon(clock.start())
 
     start_cycle = 0
     for cycle in range(5000):
-        await RisingEdge(dut.clk_i)
+        await RisingEdge(dut.clk_s)
         # Count cycles
         if dut.led_o.value == 0b00000010 and start_cycle == 0:
             start_cycle = cycle
@@ -83,12 +83,12 @@ async def test_ck_cycles(dut):
     ck_period_ns = int(round(1e9/ck_freq))
 
     # Start the clock
-    clock = Clock(dut.clk_i, ck_period_ns, units='ns')
+    clock = Clock(dut.clk_s, ck_period_ns, units='ns')
     cocotb.start_soon(clock.start())
 
     start_cycle = 0
     for cycle in tqdm(range(300000)):
-        await RisingEdge(dut.clk_i)
+        await RisingEdge(dut.clk_s)
         # Count cycles
         if dut.led_o.value == 0b00000010 and start_cycle == 0:
             start_cycle = cycle
@@ -123,12 +123,12 @@ async def test_dhry(dut):
     ck_period_ns = int(round(1e9/ck_freq))
 
     # Start the clock
-    clock = Clock(dut.clk_i, ck_period_ns, units='ns')
+    clock = Clock(dut.clk_s, ck_period_ns, units='ns')
     cocotb.start_soon(clock.start())
 
     start_cycle = 0
     for cycle in tqdm(range(30)):
-        await RisingEdge(dut.clk_i)
+        await RisingEdge(dut.clk_s)
 
         # for word in dut.inst_mem.instruction_memory.value:
         #     if word != 0:
@@ -152,12 +152,12 @@ async def test_mem(dut):
     ck_period_ns = int(round(1e9/ck_freq))
 
     # Start the clock
-    clock = Clock(dut.clk_i, ck_period_ns, units='ns')
+    clock = Clock(dut.clk_s, ck_period_ns, units='ns')
     cocotb.start_soon(clock.start())
 
     start_cycle = 0
     for cycle in range(5):
-        await RisingEdge(dut.clk_i)
+        await RisingEdge(dut.clk_s)
 
         count = 0
         for word in dut.inst_mem.instruction_memory.value:
@@ -180,7 +180,7 @@ async def test_branch_predict(dut):
     ck_period_ns = int(round(1e9/ck_freq))
 
     # Start the clock
-    clock = Clock(dut.clk_i, ck_period_ns, units='ns')
+    clock = Clock(dut.clk_s, ck_period_ns, units='ns')
     cocotb.start_soon(clock.start())
 
     start_cycle = 0
@@ -191,7 +191,7 @@ async def test_branch_predict(dut):
     actual = last_actual = 0
     is_predicted = False
     for cycle in tqdm(range(1279000)):
-        await RisingEdge(dut.clk_i)
+        await RisingEdge(dut.clk_s)
 
         # Count branches
         branch = dut.processor.branch_predictor_FSM.branch_mem_sig.value
