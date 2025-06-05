@@ -11,6 +11,7 @@ module imm_gen(inst, imm);
 	input [31:0]		inst;
 	output reg [31:0]	imm;
 
+	// Doesn't need this?
 	initial begin
 		imm = 32'b0;
 	end

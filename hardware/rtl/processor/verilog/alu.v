@@ -14,7 +14,7 @@ module alu(
     output reg  [31:0] ALUOut,
     output reg         branch_enable
 );
-    // TODO: Use reset signal instead of initial
+    // Doesn't really need reset? Case statements below default to zero
     initial begin
         ALUOut = 32'b0;
         branch_enable = 1'b0;

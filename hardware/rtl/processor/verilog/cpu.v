@@ -189,6 +189,7 @@ module cpu(
     );
 
     alu_control alu_control(
+        .reset_n_i(reset_n_i),
         .Opcode  (if_id_out[38:32]),    // opcode
         .FuncCode({if_id_out[62],       // funct7[5]
                    if_id_out[46:44]}),  // funct3
