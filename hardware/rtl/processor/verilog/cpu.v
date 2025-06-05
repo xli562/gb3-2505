@@ -50,8 +50,6 @@ module cpu(
     wire [ 31:0] regA_out;
     wire [ 31:0] regB_out;
     wire [ 31:0] imm_out;
-    wire [  4:0] RegA_AddrFwdFlush_mux_out;
-    wire [  4:0] RegB_AddrFwdFlush_mux_out;
     wire [  3:0] dataMem_sign_mask;
 
     // EX

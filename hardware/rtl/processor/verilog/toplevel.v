@@ -28,7 +28,7 @@ module toplevel (led_o);
 		*/
 		// 0b00 = 48 MHz, 0b01 = 24 MHz, 0b10 = 12MHz, 0b11 = 6MHz 
 		SB_HFOSC #(
-			.CLKHF_DIV("0b10")
+			.CLKHF_DIV("0b11")
 		) OSCInst0 (
 			.CLKHFEN(ENCLKHF),
 			.CLKHFPU(CLKHF_POWERUP),
@@ -83,5 +83,5 @@ module toplevel (led_o);
 		);
 
 	assign clk_proc = (data_clk_stall) ? 1'b1 : clk_i;
-	assign led_o = 8'hff;
+	// assign led_o = 8'hff;
 endmodule

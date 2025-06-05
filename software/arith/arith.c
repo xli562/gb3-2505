@@ -4,9 +4,12 @@
 
 #include "e-types.h"
 
-int a = 42;
-int b = 42;
-int c = 42;
+volatile unsigned int a = 40;
+volatile signed   int b = -10;
+volatile unsigned int c = 42;
+int add(int m, int n) {
+  return m + n;
+}
 
 int main(void) {
   volatile unsigned int *gDebugLedsMemoryMappedRegister = (unsigned int *)0x2000;
@@ -16,27 +19,51 @@ int main(void) {
   int bit15, bit13, bit12, bit10, newBit;
   int seed = 0x5876;
   for (int i = 0; i < 200; i ++) {
-    a = a + 5;
-    b = a - i;
-    c = b << 3;
-    a = b & c;
-    c = a | b;
-    a = b >> 2;
-    b = ~a;
-    c = a ^ i;
-    if (a >= 2) {
-      b = a < 2;
-    } else if (b > -5) {
-      c = a < 2;
+    a = b + a;          // ADD
+    b = a + 5;          // ADDI
+    a = c - a;          // SUB; dependancy
+    c = b - 2;          // SUBI; dependancy
+    a = a ^ i;
+    c = a | c;          // OR
+    c = c & 0x0000FFFF; // ANDI
+    b = b & c;          // AND
+    a = a | 0x1101;     // ORI
+    a = a ^ b;          // XOR
+    b = c ^ 0xBEEF;     // XORI
+    a = a << b;         // SLL
+    b = a + c;          // ADD; create dependancy
+    c = i ^ b;
+    b = a << 3;         // SLLI
+    c = i & (a & 0b1111) | 0b10;
+    b = b >> a;         // SRA
+    b = b - 5000;
+    b = b >> 2;         // SRAI
+    a = c >> a;         // SRL
+    c = a >> 3;         // SRLI
+    a = b > i;          // SLT
+    a = add(1, -i);     // JAL, JALR
+    a = a > c;          // SLTU
+    a = b < -1;         // SLTI
+    a = a >= i;         // SLTUI
+    
+    if (a >= 2) {       // BGEU
+      b = a ^ i ^ 5000;
+    } else if (b > -5) {// BLT
+      c = a ^ i ^ 4000;
+    } else if (i != 8) {// BNE
+      a = a ^ i ^ 3000;
+    } else if (i < 40) {
+      goto SHUFFLE;     // JAL
     }
     switch (b) {
-      case 5:
-        b --;
+      case 5:           // BEQ
+        b ^= i;
         break;
-      case 6:
-        c --;
+      case 6:           // BEQ
+        c ^= i;
         break;
     }
+    SHUFFLE:
     // Shuffling (linear feedback shift register random number generator)
     bit15 = (seed >> 15) & 1;
     bit13 = (seed >> 13) & 1;
