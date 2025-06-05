@@ -28,7 +28,7 @@ module cpu(
 
     // Pipeline registers
     wire [ 63:0] if_id_out;
-    wire [177:0] id_ex_out;
+    wire [178:0] id_ex_out;
     wire [154:0] ex_mem_out;
     wire [116:0] mem_wb_out;
 
@@ -57,7 +57,7 @@ module cpu(
     wire [ 31:0] addr_adder_mux_out;
     wire [ 31:0] alu_mux_out;
     wire [ 31:0] addr_adder_sum;
-    wire [  6:0] alu_ctl;
+    wire [  7:0] alu_ctl;
     wire         alu_branch_enable;
     wire [ 31:0] alu_result;
     wire [ 31:0] lui_result;
@@ -108,9 +108,9 @@ module cpu(
     dff #(
         .WIDTH(32)
     ) PC (
-        .clk_i(clk_i),
-        .reset_n_i      (reset_n_i),
-        .data_i(pc_in),
+        .clk_i         (clk_i),
+        .reset_n_i     (reset_n_i),
+        .data_i        (pc_in),
         .delayed_data_o(pc_out)
     );
 
@@ -203,23 +203,24 @@ module cpu(
     
     // ID-EX Pipeline Register
     dff #(
-        .WIDTH(178)
+        .WIDTH(179)
     ) id_ex_reg (
         .clk_i         (clk_i),
         .reset_n_i     (reset_n_i),
-        .data_i        ({if_id_out[63:52],     // [177:166] (11 bits)
-                          if_id_out[56:52],    // [165:161] ( 5 bits)
-                          if_id_out[51:47],    // [160:156] ( 5 bits)
-                          if_id_out[43:39],    // [155:151] ( 5 bits)
-                          dataMem_sign_mask,   // [150:147] ( 4 bits)
-                          alu_ctl,             // [146:140] (32 bits)
-                          imm_out,             // [139:108] (32 bits)
-                          regB_out,            // [107: 76] (32 bits)
-                          regA_out,            // [ 75: 44] (32 bits)
-                          if_id_out[31:0],     // [ 43: 12] (32 bits)
-                          cont_mux_out[10:7],  // [ 11:  8] ( 4 bits)
-                          predict,             // [    7  ] ( 1 bit )
-                          cont_mux_out[6:0]}), // [  6:  0] ( 7 bits)
+        .data_i        ({alu_ctl[7],          // [   178 ] ( 1 bit )
+                         if_id_out[63:52],    // [177:166] (11 bits)
+                         if_id_out[56:52],    // [165:161] ( 5 bits)
+                         if_id_out[51:47],    // [160:156] ( 5 bits)
+                         if_id_out[43:39],    // [155:151] ( 5 bits)
+                         dataMem_sign_mask,   // [150:147] ( 4 bits)
+                         alu_ctl[6:0],        // [146:140] (32 bits)
+                         imm_out,             // [139:108] (32 bits)
+                         regB_out,            // [107: 76] (32 bits)
+                         regA_out,            // [ 75: 44] (32 bits)
+                         if_id_out[31:0],     // [ 43: 12] (32 bits)
+                         cont_mux_out[10:7],  // [ 11:  8] ( 4 bits)
+                         predict,             // [    7  ] ( 1 bit )
+                         cont_mux_out[6:0]}), // [  6:  0] ( 7 bits)
         .delayed_data_o(id_ex_out)
     );
     
@@ -250,12 +251,12 @@ module cpu(
         .out   (alu_mux_out)
     );
 
-    alu alu_main(
-        .ALUctl       (id_ex_out[146:140]), // alu_ctl
-        .A            (wb_fwd1_mux_out),
-        .B            (alu_mux_out),
-        .ALUOut       (alu_result),
-        .branch_enable(alu_branch_enable)
+    alu alu_inst(
+        .a_i(wb_fwd1_mux_out),
+        .b_i(alu_mux_out),
+        .sel_i({id_ex_out[178], id_ex_out[146:140]}),
+        .result_o(alu_result),
+        .branch_ena_o(alu_branch_enable)
     );
 
     mux2to1 lui_mux(
@@ -266,7 +267,7 @@ module cpu(
     );
 
     // EX-MEM Pipeline Register
-    dff#(
+    dff #(
         .WIDTH(155)
     ) ex_mem_reg(
         .clk_i         (clk_i),
