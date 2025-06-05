@@ -53,9 +53,7 @@ module toplevel (led_o);
 		.data_mem_WrData(data_WrData),
 		.data_mem_memwrite(data_memwrite),
 		.data_mem_memread(data_memread),
-		.data_mem_sign_mask(data_sign_mask),
-		.led_i(led),
-		.led_o(led_o)
+		.data_mem_sign_mask(data_sign_mask)
 	);
 
 	instruction_memory inst_mem( 
@@ -74,6 +72,6 @@ module toplevel (led_o);
 			.led(led),
 			.clk_stall(data_clk_stall)
 		);
-
+	assign led_o = led;
 	assign clk_proc = (data_clk_stall) ? 1'b1 : clk_i;
 endmodule

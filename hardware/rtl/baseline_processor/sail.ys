@@ -1,5 +1,5 @@
-read_verilog include/rv32i-defines.v verilog/adder.v verilog/cpu.v verilog/mux2to1.v verilog/alu_control.v verilog/if_id.v verilog/alu.v verilog/program_counter.v verilog/branch_decide.v verilog/forwarding_unit.v verilog/branch_predictor.v verilog/imm_gen.v verilog/control_unit.v verilog/instruction_memory.v verilog/data_mem.v verilog/regfile.v verilog/csr_file.v verilog/sign_mask_gen.v verilog/cycle_counter.v verilog/morse_counter.v verilog/morse_encoder.v verilog/morse_fsm.v verilog/toplevel.v
+read_verilog baseline_processor/include/rv32i-defines.v baseline_processor/verilog/adder.v baseline_processor/verilog/cpu.v baseline_processor/verilog/mux2to1.v baseline_processor/verilog/alu_control.v baseline_processor/verilog/if_id.v baseline_processor/verilog/alu.v baseline_processor/verilog/program_counter.v baseline_processor/verilog/branch_decide.v baseline_processor/verilog/forwarding_unit.v baseline_processor/verilog/branch_predictor.v baseline_processor/verilog/imm_gen.v baseline_processor/verilog/control_unit.v baseline_processor/verilog/instruction_memory.v baseline_processor/verilog/data_mem.v baseline_processor/verilog/regfile.v baseline_processor/verilog/csr_file.v baseline_processor/verilog/sign_mask_gen.v baseline_processor/verilog/cycle_counter.v baseline_processor/verilog/morse_counter.v baseline_processor/verilog/morse_encoder.v baseline_processor/verilog/morse_fsm.v baseline_processor/verilog/toplevel.v
 
 synth_ice40 -noflatten -blif sail.blif
 
-write_json sail.json
+write_json baseline_processor/sail.json

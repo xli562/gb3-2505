@@ -12,8 +12,6 @@ module cpu(
 			data_mem_memwrite,
 			data_mem_memread,
 			data_mem_sign_mask,
-			led_i,
-			led_o
 		);
 	/*
 	 *	Input Clock
@@ -35,9 +33,6 @@ module cpu(
 	output			data_mem_memwrite;
 	output			data_mem_memread;
 	output [3:0]		data_mem_sign_mask;
-
-	input  [7:0] led_i;
-	output  [7:0] led_o;
 
 	/*
 	 *	Program Counter
@@ -313,34 +308,6 @@ module cpu(
 			.select(id_ex_out[10]),
 			.out(alu_mux_out)
 		);
-
-	assign led_o = led_i;
-	// Uncomment for cycle counting and morse output via led
-	// // Fast clock is 48 MHz
-	// wire [`kCYCLE_COUNTER_WIDTH-1:0] counter_readout;
-	// assign led_o[6:1] = led_i[6:1];
-	// assign led_o[0] = led_o[7];
-		
-
-	// // Start counting if decimal 100 appears at ALU inputs
-	// morse_encoder morse_encoder_0 (
-	// 		.clk_i(clk),
-	// 		.rstn_i(1'b1),
-	// 		.parallel_i(counter_readout),
-	// 		.send_i(led_o[2]),
-	// 		.serial_o(led_o[7])
-	// 	);
-
-	// // clk counts clock cycles,
-	// cycle_counter counter_clock_inst (
-	// 		.clk_i(clk),
-	// 		.rstn_i(1'b1),
-	// 		.cycles_i('1),	// Start count at 1
-	// 		.start_i(1'b1),
-	// 		.enable_i(led_o[1]),
-	// 		.readout_o(counter_readout)
-	// 	);
-
 
 	alu alu_main(
 			.ALUctl(id_ex_out[146:140]),

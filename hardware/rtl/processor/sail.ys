@@ -2,4 +2,4 @@ read_verilog processor/include/rv32i-defines.v processor/verilog/adder.v process
 
 synth_ice40 -flatten -abc9 -blif sail.blif
 
-write_json sail.json
+write_json processor/sail.json
