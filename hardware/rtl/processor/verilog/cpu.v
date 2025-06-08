@@ -187,12 +187,12 @@ module cpu(
     );
 
     alu_control alu_control(
-        .reset_n_i(reset_n_i),
-        .opcode_i  (inst_id_s[6:0]),    // opcode
-        .funct7_bit5_i(inst_id_s[30]),// ADD / SUB
-        .funct3_i(inst_id_s[14:12]),  // funct3
-        .alu_op_sel_o  (alu_op_sel_id_s),
-        .alu_branch_sel_o  (alu_branch_sel_id_s)
+        .reset_n_i       (reset_n_i),
+        .opcode_i        (inst_id_s[6:0]),
+        .funct7_bit5_i   (inst_id_s[30]),      // ADD / SUB
+        .funct3_i        (inst_id_s[14:12]),
+        .alu_op_sel_o    (alu_op_sel_id_s),
+        .alu_branch_sel_o(alu_branch_sel_id_s)
     );
 
     sign_mask_gen sign_mask_gen_inst(
@@ -208,7 +208,7 @@ module cpu(
     wire [31:0] ctrl_mux_out_ex_s, pc_ex_s;
     wire predict_ex_s;
     dff #(
-        .WIDTH(173)
+        .WIDTH(178)
     ) id_ex_reg (
         .clk_i         (clk_i),
         .reset_n_i     (reset_n_i),
