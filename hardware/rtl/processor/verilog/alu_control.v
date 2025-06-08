@@ -42,7 +42,7 @@ module alu_control (
                         `kRV32I_FUNCCODE_2to0_BGEU:
                             alu_branch_sel_o = `kSAIL_ALUCTL_BGEU;
                         default begin
-                            alu_branch_sel_o = 3'b000;
+                            alu_branch_sel_o = `kSAIL_ALUCTL_B_INVALID;
                             alu_op_sel_o = `kSAIL_ALUCTL_INVALID;
                         end
                     endcase
