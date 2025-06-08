@@ -195,7 +195,9 @@ module cpu(
 			.Fence(Fence_signal)
 		);
 
-	mux2to1_eleven_bit cont_mux(
+	mux2to1 #(
+        .WIDTH(11)
+    ) cont_mux(
 			.input0({Jalr1, ALUSrc1, Lui1, Auipc1, Branch1, MemRead1, MemWrite1, 1'b0, RegWrite1, MemtoReg1, Jump1}),
 			.input1(11'b0),
 			.select(decode_ctrl_mux_sel),
@@ -242,7 +244,9 @@ module cpu(
 		);
 
 	//Execute stage
-	mux2to1_nine_bit ex_cont_mux(
+	mux2to1 #(
+        .WIDTH(9)
+    ) ex_cont_mux(
 			.input0(id_ex_out[8:0]),
 			.input1(9'b0),
 			.select(pcsrc),
