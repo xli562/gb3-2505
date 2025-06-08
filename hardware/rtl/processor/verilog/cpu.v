@@ -208,7 +208,7 @@ module cpu(
     wire [31:0] ctrl_mux_out_ex_s, pc_ex_s;
     wire predict_ex_s;
     dff #(
-        .WIDTH(178)
+        .WIDTH(181)
     ) id_ex_reg (
         .clk_i         (clk_i),
         .reset_n_i     (reset_n_i),

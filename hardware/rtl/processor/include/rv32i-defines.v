@@ -2,7 +2,7 @@
 `define kINST_MEM_SIZE                      16'h1000    // Modify linker script to e.g. `. = {kINST_MEM_SIZE};`
 `define kDATA_MEM_SIZE                      16'h0400
 `define kALU_OP_SEL_WIDTH                   9
-`define kALU_BRANCH_SEL_WIDTH               3
+`define kALU_BRANCH_SEL_WIDTH               6
 
 /*
  *    7-bit RISC-V opcode field
@@ -19,25 +19,26 @@
 
 
 // Branching
-`define kSAIL_ALUCTL_6to0_BEQ            3'b001
-`define kSAIL_ALUCTL_6to0_BNE            3'b010
-`define kSAIL_ALUCTL_6to0_BLT            3'b011
-`define kSAIL_ALUCTL_6to0_BGE            3'b100
-`define kSAIL_ALUCTL_6to0_BLTU           3'b101
-`define kSAIL_ALUCTL_6to0_BGEU           3'b110
+`define kSAIL_ALUCTL_BEQ            6'b000001
+`define kSAIL_ALUCTL_BNE            6'b000010
+`define kSAIL_ALUCTL_BLT            6'b000100
+`define kSAIL_ALUCTL_BGE            6'b001000
+`define kSAIL_ALUCTL_BLTU           6'b010000
+`define kSAIL_ALUCTL_BGEU           6'b100000
+`define kSAIL_ALUCTL_INVALID        6'b000000
 
 // Arithmetic and logic
-`define kSAIL_ALUCTL_6to0_ADD            9'b000000010
-`define kSAIL_ALUCTL_6to0_SUB            9'b000000110
-`define kSAIL_ALUCTL_6to0_SLL            9'b000000101
-`define kSAIL_ALUCTL_6to0_SLT            9'b000000111
-`define kSAIL_ALUCTL_6to0_XOR            9'b000001000
-`define kSAIL_ALUCTL_6to0_SRL            9'b000000011
-`define kSAIL_ALUCTL_6to0_SRA            9'b000000100
-`define kSAIL_ALUCTL_6to0_OR             9'b000000001
-`define kSAIL_ALUCTL_6to0_AND            9'b000000000
-`define kSAIL_ALUCTL_6to0_BRANCH         9'b000000110
-`define kSAIL_ALUCTL_6to0_ILLEGAL        9'b000001111
+`define kSAIL_ALUCTL_ADD            9'b000000001
+`define kSAIL_ALUCTL_SUB            9'b000000010
+`define kSAIL_ALUCTL_AND            9'b000000100
+`define kSAIL_ALUCTL_OR             9'b000001000
+`define kSAIL_ALUCTL_XOR            9'b000010000
+`define kSAIL_ALUCTL_SLL            9'b000100000
+`define kSAIL_ALUCTL_SRL            9'b001000000
+`define kSAIL_ALUCTL_SRA            9'b010000000
+`define kSAIL_ALUCTL_SLT            9'b100000000
+`define kSAIL_ALUCTL_BRANCH         9'b000000010   // Same as SUB
+`define kSAIL_ALUCTL_INVALID        9'b000000000
 
 
 
@@ -51,7 +52,7 @@
 // `define kSAIL_ALUCTL_3to0_SRL         9'b001000000
 // `define kSAIL_ALUCTL_3to0_SRA         9'b010000000
 // `define kSAIL_ALUCTL_3to0_SLT         9'b100000000
-// `define kSAIL_ALUCTL_3to0_ILLEGAL     9'b000000000
+// `define kSAIL_ALUCTL_3to0_INVALID     9'b000000000
 
 /*
  *    Low-order three bits of the FuncCode microarchtectural 4-bit field
