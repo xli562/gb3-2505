@@ -20,10 +20,10 @@ module data_mem (
 
     // State
     integer state = 0;
-    parameter           IDLE = 0;
-    parameter           READ_BUFFER = 1;
-    parameter           READ = 2;
-    parameter           WRITE = 3;
+    parameter IDLE = 0;
+    parameter READ_BUFFER = 1;
+    parameter READ = 2;
+    parameter WRITE = 3;
 
     reg         r_ena_buf;
     reg         w_ena_buf;

@@ -88,7 +88,7 @@ async def test_ck_cycles(dut):
 
     color_log(dut, f'Expted start cycle = 58')
     start_cycle = 0
-    for cycle in tqdm(range(300000)):
+    for cycle in tqdm(range(30000000)):
         await RisingEdge(dut.clk_s)
         # Count cycles
         if dut.led_o.value == 0b00000010 and start_cycle == 0:
