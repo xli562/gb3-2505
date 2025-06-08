@@ -6,15 +6,15 @@ module cpu(
     input         clk_i,
     input         reset_n_i,
     // Instruction memory
-    output [31:0] inst_mem_in,
-    input  [31:0] inst_mem_out,
+    output [31:0] inst_mem_addr_o,
+    input  [31:0] inst_i,
     // Data memory
-    input  [31:0] data_mem_out,
-    output [31:0] data_mem_addr,
-    output [31:0] data_mem_WrData,
-    output        data_mem_memwrite,
-    output        data_mem_memread,
-    output [ 3:0] data_mem_sign_mask,
+    input  [31:0] data_mem_data_i,
+    output [31:0] data_mem_addr_o,
+    output [31:0] data_mem_data_o,
+    output        data_mem_w_ena_o,
+    output        data_mem_r_ena_o,
+    output [ 3:0] data_mem_sign_mask_o,
     // Debug signal
     output        debug_o
 );
@@ -110,7 +110,7 @@ module cpu(
     );
 
     mux2to1 inst_mux(
-        .input0(inst_mem_out),
+        .input0(inst_i),
         .input1(32'b0),
         .select(inst_mux_sel),
         .out   (inst_mux_out)
@@ -204,7 +204,7 @@ module cpu(
     wire [`kALU_OP_SEL_WIDTH-1:0] alu_op_sel_ex_s;
     wire [`kALU_BRANCH_SEL_WIDTH-1:0] alu_branch_sel_ex_s;
     wire [31:0] inst_ex_s, imm_out_ex_s, reg_a_out_ex_s, reg_b_out_ex_s;
-    wire [ 3:0] data_mem_sign_mask_ex_s;
+    wire [ 3:0] data_mem_sign_mask_o_ex_s;
     wire [31:0] ctrl_mux_out_ex_s, pc_ex_s;
     wire predict_ex_s;
     dff #(
@@ -228,7 +228,7 @@ module cpu(
         .delayed_data_o({inst_ex_s[31:20],
                          inst_ex_s[19:15],
                          inst_ex_s[11: 7],
-                         data_mem_sign_mask_ex_s,
+                         data_mem_sign_mask_o_ex_s,
                          alu_branch_sel_ex_s,
                          alu_op_sel_ex_s,
                          imm_out_ex_s,
@@ -330,7 +330,7 @@ module cpu(
 
     // MA-WB Pipeline Register
     wire [31:0] inst_wb_s, auipc_mux_out_wb_s;
-    wire [31:0] data_mem_out_wb_s, lui_mux_out_wb_s;
+    wire [31:0] data_mem_data_i_wb_s, lui_mux_out_wb_s;
     wire [2:0] ex_cont_mux_out_wb_s;
     dff #(
         .WIDTH(116)
@@ -339,13 +339,13 @@ module cpu(
         .reset_n_i     (reset_n_i),
         .data_i        ({inst_ma_s[31:20], // [116:105] (12 bits)
                          inst_ma_s[11:7], // [104:100] ( 5 bits)
-                         data_mem_out,        // [ 99: 68] (32 bits)
+                         data_mem_data_i,        // [ 99: 68] (32 bits)
                          auipc_mux_out,       // [ 67: 36] (32 bits)
                          lui_mux_out_ma_s,  // [ 35:  4] (32 bits)
                          ex_cont_mux_out_ma_s[2:0]}),   // [  3:  0] ( 4 bits)
         .delayed_data_o({inst_wb_s[31:20],
                          inst_wb_s[11:7],
-                         data_mem_out_wb_s,
+                         data_mem_data_i_wb_s,
                          auipc_mux_out_wb_s,
                          lui_mux_out_wb_s,
                          ex_cont_mux_out_wb_s})
@@ -353,7 +353,7 @@ module cpu(
 
     mux2to1 wb_mux(
         .input0(auipc_mux_out_wb_s),
-        .input1(data_mem_out_wb_s),
+        .input1(data_mem_data_i_wb_s),
         .select(ex_cont_mux_out_wb_s[1]),
         .out   (wb_mux_out)
     );
@@ -408,7 +408,7 @@ module cpu(
 
     mux2to1 dataMemOut_fwd_mux(
         .input0(lui_mux_out_ma_s),
-        .input1(data_mem_out),
+        .input1(data_mem_data_i),
         .select(ex_cont_mux_out_ma_s[1]),
         .out   (dataMemOut_fwd_mux_out)
     );
@@ -442,7 +442,7 @@ module cpu(
     // Copy of WB mux, but in MA stage. Move back and cleanup
     mux2to1 mem_regwb_mux(
         .input0(auipc_mux_out),
-        .input1(data_mem_out),
+        .input1(data_mem_data_i),
         .select(ex_cont_mux_out_ma_s[1]),
         .out   (mem_regwb_mux_out)
     );
@@ -452,12 +452,12 @@ module cpu(
     assign inst_mux_sel = pcsrc | predict | mistake_trigger | Fence_signal;
 
     // Instruction Memory Connections
-    assign inst_mem_in = pc_out;
+    assign inst_mem_addr_o = pc_out;
 
     // Data Memory Connections
-    assign data_mem_addr = lui_mux_out;
-    assign data_mem_WrData = wb_fwd2_mux_out;
-    assign data_mem_memwrite = ex_cont_mux_out[4];
-    assign data_mem_memread = ex_cont_mux_out[5];
-    assign data_mem_sign_mask = data_mem_sign_mask_ex_s;
+    assign data_mem_addr_o = lui_mux_out;
+    assign data_mem_data_o = wb_fwd2_mux_out;
+    assign data_mem_w_ena_o = ex_cont_mux_out[4];
+    assign data_mem_r_ena_o = ex_cont_mux_out[5];
+    assign data_mem_sign_mask_o = data_mem_sign_mask_o_ex_s;
 endmodule

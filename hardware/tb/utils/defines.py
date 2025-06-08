@@ -1,7 +1,6 @@
 # This file is updated for each run, by runner._update_defines
 kCYCLE_COUNTER_WIDTH = 42
 kINST_MEM_SIZE = 4096
-kDATA_MEM_SIZE = 1024
 kALU_OP_SEL_WIDTH = 9
 kALU_BRANCH_SEL_WIDTH = 6
 kRV32I_OPCODE_LUI = 55

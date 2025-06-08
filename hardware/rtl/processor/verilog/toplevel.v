@@ -7,21 +7,6 @@
 module toplevel (
     output [7:0] led_o
 );
-    wire        clk_proc_s;
-    wire        data_clk_stall;
-    wire [31:0] inst_in;
-    wire [31:0] inst_out;
-    wire [31:0] data_out;
-    wire [31:0] data_addr;
-    wire [31:0] data_WrData;
-    wire        data_memwrite;
-    wire        data_memread;
-    wire [ 3:0] data_sign_mask;
-    wire         debug_s;
-    wire [ 7:0] led_s;
-    reg          reset_n_s = 1'b0;
-    reg  [ 4:0] reset_counter_s = 0;
-
     `ifdef SIMULATION
         reg  clk_s;
     `else
@@ -37,6 +22,21 @@ module toplevel (
             .CLKHF(clk_s)
         );
     `endif
+        
+    wire        clk_proc_s;
+    wire        data_clk_stall;
+    reg         reset_n_s = 1'b0;
+    reg  [ 4:0] reset_counter_s = 0;
+    wire [31:0] inst_addr_s;
+    wire [31:0] inst_s;
+    wire [31:0] data_out;
+    wire [31:0] data_addr_s;
+    wire [31:0] w_data_s;
+    wire        data_w_ena_s;
+    wire        data_r_ena_s;
+    wire [ 3:0] data_sign_mask_s;
+    wire        debug_s;
+    wire [ 7:0] led_s;
 
     always @(posedge clk_s) begin
         if (reset_counter_s == 5'b11111)
@@ -46,34 +46,34 @@ module toplevel (
     end
 
     cpu processor(
-        .clk_i(clk_proc_s),
-        .reset_n_i(reset_n_s),
-        .inst_mem_in(inst_in),
-        .inst_mem_out(inst_out),
-        .data_mem_out(data_out),
-        .data_mem_addr(data_addr),
-        .data_mem_WrData(data_WrData),
-        .data_mem_memwrite(data_memwrite),
-        .data_mem_memread(data_memread),
-        .data_mem_sign_mask(data_sign_mask),
-        .debug_o(debug_s)
+        .clk_i               (clk_proc_s),
+        .reset_n_i           (reset_n_s),
+        .inst_mem_addr_o     (inst_addr_s),
+        .inst_i              (inst_s),
+        .data_mem_data_i     (data_out),
+        .data_mem_addr_o     (data_addr_s),
+        .data_mem_data_o     (w_data_s),
+        .data_mem_w_ena_o    (data_w_ena_s),
+        .data_mem_r_ena_o    (data_r_ena_s),
+        .data_mem_sign_mask_o(data_sign_mask_s),
+        .debug_o             (debug_s)
     );
 
     instruction_memory inst_mem( 
-        .addr(inst_in), 
-        .out(inst_out)
+        .addr(inst_addr_s), 
+        .out(inst_s)
     );
 
     data_mem data_mem_inst(
-            .clk(clk_s),
-            .addr(data_addr),
-            .write_data(data_WrData),
-            .memwrite(data_memwrite),
-            .memread(data_memread),
-            .read_data(data_out),
-            .sign_mask(data_sign_mask),
-            .led(led_s),
-            .clk_stall(data_clk_stall)
+            .clk_i      (clk_s),
+            .addr_i     (data_addr_s),
+            .w_data_i   (w_data_s),
+            .w_ena_i    (data_w_ena_s),
+            .r_ena_i    (data_r_ena_s),
+            .r_data_o   (data_out),
+            .sign_mask_i(data_sign_mask_s),
+            .led_o      (led_s),
+            .clk_stall_o(data_clk_stall)
     );
 
     assign clk_proc_s = (data_clk_stall) ? 1'b1 : clk_s;

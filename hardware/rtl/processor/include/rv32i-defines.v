@@ -1,6 +1,6 @@
 `define kCYCLE_COUNTER_WIDTH  42        // Enough for several hours @ 48MHz clk
 `define kINST_MEM_SIZE        16'h1000  // Modify linker script to e.g. `. = {kINST_MEM_SIZE};`
-`define kDATA_MEM_SIZE        16'h0400
+// `define kDATA_MEM_SIZE        16'h0400
 `define kALU_OP_SEL_WIDTH     9
 `define kALU_BRANCH_SEL_WIDTH 6
 
