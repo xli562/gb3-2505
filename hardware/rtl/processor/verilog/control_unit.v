@@ -11,20 +11,19 @@ module control_unit(
 		RegWrite,
 		MemWrite,
 		MemRead,
-		branch,
+		Branch,
 		ALUSrc,
-		jump,
+		Jump,
 		Jalr,
 		Lui,
 		Auipc,
-		Fence,
-		CSRR
+		Fence
 	);
 
 
 	// All RV32I opcode end with 11
 	input	[6:0] opcode;
-	output	MemtoReg, RegWrite, MemWrite, MemRead, branch, ALUSrc, jump, Jalr, Lui, Auipc, Fence, CSRR;
+	output	MemtoReg, RegWrite, MemWrite, MemRead, Branch, ALUSrc, Jump, Jalr, Lui, Auipc, Fence;
 
 	assign MemtoReg = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[0]);
 
@@ -37,11 +36,11 @@ module control_unit(
 	assign MemRead = (~opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[1]);
 
 	// All branching instructions (beq, bne, blt, bge, bltu, bgeu) have opcode 1100011
-	assign branch = (opcode[6]) & (~opcode[4]) & (~opcode[2]);
+	assign Branch = (opcode[6]) & (~opcode[4]) & (~opcode[2]);
 	assign ALUSrc = ~(opcode[6] | opcode[4]) | (~opcode[5]);
 
 	// jal has opcode 1101111
-	assign jump = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (opcode[2]);
+	assign Jump = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (opcode[2]);
 
 	// jalr has opcode 1100111
 	assign Jalr = (opcode[6]) & (opcode[5]) & (~opcode[4]) & (~opcode[3]) & (opcode[2]);
@@ -54,5 +53,4 @@ module control_unit(
 
 	// fence and fence.i have opcode 0001111
 	assign Fence = (~opcode[5]) & opcode[3] & (opcode[2]);
-	assign CSRR = (opcode[6]) & (opcode[4]);
 endmodule

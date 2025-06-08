@@ -21,6 +21,7 @@ module toplevel (led_o);
 		wire		clk_i;
 		reg		ENCLKHF		= 1'b1;	// Plock enable
 		reg		CLKHF_POWERUP	= 1'b1;	// Power up the HFOSC circuit
+		wire	local_clk;
 
 
 		/*
@@ -28,15 +29,32 @@ module toplevel (led_o);
 		*/
 		// 0b00 = 48 MHz, 0b01 = 24 MHz, 0b10 = 12MHz, 0b11 = 6MHz 
 		SB_HFOSC #(
-			.CLKHF_DIV("0b10")
+			.CLKHF_DIV("0b11")
 		) OSCInst0 (
 			.CLKHFEN(ENCLKHF),
 			.CLKHFPU(CLKHF_POWERUP),
-			.CLKHF(clk_i)
+			.CLKHF(local_clk)
+		);
+		SB_PLL40_CORE #(
+			.FEEDBACK_PATH("SIMPLE"),
+			.PLLOUT_SELECT("GENCLK"),
+			.DIVR(4'b1111),
+			.DIVF(7'b0000000),
+			.DIVQ(3'b111),
+			.FILTER_RANGE(3'b100),
+		) SB_PLL40_CORE_inst (
+			.RESETB(1'b1),
+			.BYPASS(1'b0),
+			.PLLOUTCORE(clk_i),
+			.REFERENCECLK(local_clk)
 		);
 	`endif
 
 	
+
+	/*
+	Use a PLL to synthesise the clock signal
+	*/
 
 	/*
 	 *	Memory interface
@@ -48,7 +66,7 @@ module toplevel (led_o);
 	wire[31:0]	data_WrData;
 	wire		data_memwrite;
 	wire		data_memread;
-	wire[3:0]	data_sign_mask;
+	wire[2:0]	data_sign_mask;
 
 	wire [7:0] led;
 	cpu processor(

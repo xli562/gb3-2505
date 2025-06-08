@@ -7,67 +7,79 @@
  *  - TABLE_BITS: log2 of number of entries in the pattern table
  *  - Each entry is a 2-bit counter: 00/01 bias not-taken, 10/11 bias taken.
  */
-module branch_predictor #(
-    parameter TABLE_BITS = 5
-) (
-    input             clk,
-    // actual outcome (from MEM stage)
-    input             actual_branch_decision,
-    // high in ID stage for any branch-decode
-    input             branch_decode_sig,
-    // high in MEM stage when a branch retires
-    input             branch_mem_sig,
-    // PC of the branch (from IF/ID) and its immediate
-    input  [31:0]     in_addr,
-    input  [31:0]     offset,
-    // outputs: target address and 1='taken'
-    output [31:0]     branch_addr,
-    output            prediction
-);
+module branch_predictor(
+		clk,
+		actual_branch_decision,
+		branch_decode_sig,
+		branch_mem_sig,
+		in_addr,
+		offset,
+		branch_addr,
+		prediction
+	);
 
-    localparam TABLE_SIZE = (1 << TABLE_BITS);
+	/*
+	 *	inputs
+	 */
+	input		clk;
+	input		actual_branch_decision;
+	input		branch_decode_sig;
+	input		branch_mem_sig;
+	input [31:0]	in_addr;
+	input [31:0]	offset;
 
-    // pattern-history table of 2-bit saturating counters
-    reg [1:0] pattern_table [0:TABLE_SIZE-1];
+	/*
+	 *	outputs
+	 */
+	output [31:0]	branch_addr;
+	output		prediction;
 
-    // save the index at decode so we know which entry to update later
-    reg [TABLE_BITS-1:0] id_reg;
+	/*
+	 *	internal state
+	 */
+	reg [1:0]	s;
 
-    // derive the table index from low bits of PC (word-aligned)
-    wire [TABLE_BITS-1:0] id = in_addr[TABLE_BITS+1:2];
+	reg		branch_mem_sig_reg;
 
-    wire       is_branch_back = offset[31];
+	wire [31:0] branch_addr_calc;
 
-    integer i;
-    initial begin
-        // initialize all counters to 'weakly not taken' (01)
-        for (i = 0; i < TABLE_SIZE; i = i + 1)
-            pattern_table[i] = 2'b01;
-        id_reg = {TABLE_BITS{1'b0}};
-    end
+	adder branch_adder(
+			.input1(in_addr),
+			.input2(offset),
+			.out(branch_addr_calc)
+		);
 
-    // capture which entry to update whenever we decode a branch
-    always @(negedge clk) begin
-        if (branch_decode_sig) begin
-            id_reg <= id;
-        end
-    end
+	/*
+	 *	The `initial` statement below uses Yosys's support for nonzero
+	 *	initial values:
+	 *
+	 *		https://github.com/YosysHQ/yosys/commit/0793f1b196df536975a044a4ce53025c81d00c7f
+	 *
+	 *	Rather than using this simulation construct (`initial`),
+	 *	the design should instead use a reset signal going to
+	 *	modules in the design and to thereby set the values.
+	 */
+	initial begin
+		s = 2'b00;
+		branch_mem_sig_reg = 1'b0;
+	end
 
-    // when the branch actually retires, update that counter
-    always @(posedge clk) begin
-        if (branch_mem_sig & ~(is_branch_back)) begin
-            case (pattern_table[id_reg])
-                2'b00: pattern_table[id_reg] <= actual_branch_decision ? 2'b01 : 2'b00;
-                2'b01: pattern_table[id_reg] <= actual_branch_decision ? 2'b10 : 2'b00;
-                2'b10: pattern_table[id_reg] <= actual_branch_decision ? 2'b11 : 2'b01;
-                2'b11: pattern_table[id_reg] <= actual_branch_decision ? 2'b11 : 2'b10;
-            endcase
-        end
-    end
+	always @(negedge clk) begin
+		branch_mem_sig_reg <= branch_mem_sig;
+	end
 
-    // compute target and prediction
-    assign branch_addr = in_addr + offset;
-    // prediction = MSB of the counter, gated by 'this is a branch'
-    assign prediction  = (pattern_table[id][1] | is_branch_back) & branch_decode_sig;
+	/*
+	 *	Using this microarchitecture, branches can't occur consecutively
+	 *	therefore can use branch_mem_sig as every branch is followed by
+	 *	a bubble, so a 0 to 1 transition
+	 */
+	always @(posedge clk) begin
+		if (branch_mem_sig_reg) begin
+			s[1] <= (s[1]&s[0]) | (s[0]&actual_branch_decision) | (s[1]&actual_branch_decision);
+			s[0] <= (s[1]&(!s[0])) | ((!s[0])&actual_branch_decision) | (s[1]&actual_branch_decision);
+		end
+	end
 
+	assign branch_addr = branch_addr_calc;
+	assign prediction = s[1] & branch_decode_sig;
 endmodule
