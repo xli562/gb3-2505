@@ -8,7 +8,7 @@
 
 module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data, led, clk_stall);
 	input			clk;
-	input [31:0]		addr;
+	input [13:0]		addr;
 	input [31:0]		write_data;
 	input			memwrite;
 	input			memread;
@@ -18,7 +18,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	output reg		clk_stall;	//Sets the clock high
 
     // led register
-    reg [31:0]          led_reg;
+    reg [1:0]          led_reg;
 
     //Current state
     integer state = 0;
@@ -43,7 +43,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
     reg [31:0]        write_data_buffer;
 
     // Buffer to store address
-    reg [31:0]        addr_buf;
+    reg [13:0]        addr_buf;
 
 	/*
 	 *	Sign_mask buffer
@@ -172,7 +172,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
     // LED register interfacing with I/O
     always @(posedge clk) begin
 		if(memwrite == 1'b1 && addr == 32'h2000) begin
-			led_reg <= write_data;
+			led_reg <= write_data[1:0];
             if (write_data == 4) begin
                 `ifdef SIMULATION
                 $display("LED WRITE detected: %h at cycle %0d", write_data, tb.cycle_count);
@@ -221,6 +221,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
             end
 
             READ: begin
+                
+
                 clk_stall <= 0;
                 read_data <= read_buf;
                 state <= IDLE;
@@ -244,8 +246,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 
     // Test LEDs on the MDP board
     // led[0] is green led
-    // led[7] is pin 15 of J33
+    // led[7] is pin 15 of J33 THIS HAS BEEN DISSABLED 
     // led[1] is cycle counter trigger
     // led[2] is morse encoder's 'send' signal
-    assign led = led_reg;
+    assign led = {4'b0, led_reg};
 endmodule

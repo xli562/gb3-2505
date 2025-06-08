@@ -30,7 +30,7 @@ module cpu(
 	 *	Data Memory
 	 */
 	input [31:0]		data_mem_out;
-	output [31:0]		data_mem_addr;
+	output [13:0]		data_mem_addr;
 	output [31:0]		data_mem_WrData;
 	output			data_mem_memwrite;
 	output			data_mem_memread;
@@ -77,12 +77,10 @@ module cpu(
 	 */
 	wire [10:0]		cont_mux_out; //control signal mux
 	wire [31:0]		RegB_out;
+	wire [31:0]		RegA_out;
 	wire [31:0]		imm_out;
-	wire [31:0]		RegA_mux_out;
-	wire [31:0]		RegB_mux_out;
 	wire [4:0]		RegA_AddrFwdFlush_mux_out;
 	wire [4:0]		RegB_AddrFwdFlush_mux_out;
-	wire [31:0]		rdValOut_CSR;
 	wire [2:0]		dataMem_sign_mask;
 
 	/*
@@ -197,7 +195,9 @@ module cpu(
 			.Fence(Fence_signal)
 		);
 
-	mux2to1_eleven_bit cont_mux(
+	mux2to1 #(
+        .WIDTH(11)
+    ) cont_mux(
 			.input0({Jalr1, ALUSrc1, Lui1, Auipc1, Branch1, MemRead1, MemWrite1, 1'b0, RegWrite1, MemtoReg1, Jump1}),
 			.input1(11'b0),
 			.select(decode_ctrl_mux_sel),
@@ -210,7 +210,7 @@ module cpu(
 			.wrAddr(ex_mem_out[142:138]),
 			.wrData(reg_dat_mux_out),
 			.rdAddrA(inst_mux_out[19:15]),
-			.rdDataA(RegA_mux_out),
+			.rdDataA(RegA_out),
 			.rdAddrB(inst_mux_out[24:20]),
 			.rdDataB(RegB_out)
 		);
@@ -239,12 +239,14 @@ module cpu(
 	//ID/EX Pipeline Register
 	id_ex id_ex_reg(
 			.clk(clk),
-			.data_in({if_id_out[63:52], RegB_AddrFwdFlush_mux_out, RegA_AddrFwdFlush_mux_out, if_id_out[43:39], 1'b0, dataMem_sign_mask, alu_ctl, imm_out, RegB_out, RegA_mux_out, if_id_out[31:0], cont_mux_out[10:7], predict, cont_mux_out[6:0]}),
+			.data_in({if_id_out[63:52], RegB_AddrFwdFlush_mux_out, RegA_AddrFwdFlush_mux_out, if_id_out[43:39], 1'b0, dataMem_sign_mask, alu_ctl, imm_out, RegB_out, RegA_out, if_id_out[31:0], cont_mux_out[10:7], predict, cont_mux_out[6:0]}),
 			.data_out(id_ex_out)
 		);
 
 	//Execute stage
-	mux2to1_nine_bit ex_cont_mux(
+	mux2to1 #(
+        .WIDTH(9)
+    ) ex_cont_mux(
 			.input0(id_ex_out[8:0]),
 			.input1(9'b0),
 			.select(pcsrc),
@@ -453,7 +455,7 @@ module cpu(
 	assign inst_mem_in = pc_out;
 
 	//Data Memory Connections
-	assign data_mem_addr = lui_result;
+	assign data_mem_addr = lui_result[13:0];
 	assign data_mem_WrData = wb_fwd2_mux_out;
 	assign data_mem_memwrite = ex_cont_mux_out[4];
 	assign data_mem_memread = ex_cont_mux_out[5];

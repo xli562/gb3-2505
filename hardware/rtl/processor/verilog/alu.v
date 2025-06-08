@@ -80,21 +80,6 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
             `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:   ALUOut = A ^ B;
 
             /*
-             *    CSRRW  only
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW: ALUOut = A;
-
-            /*
-             *    CSRRS only
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS: ALUOut = A | B;
-
-            /*
-             *    CSRRC only
-             */
-            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRC: ALUOut = (~A) & B;
-
-            /*
              *    Should never happen.
              */
             default:                    				ALUOut = '0;
