@@ -45,13 +45,14 @@ module cpu(
     wire [ 31:0] regB_out;
     wire [ 31:0] imm_out;
     wire [  3:0] dataMem_sign_mask;
+    wire [`kALU_OP_SEL_WIDTH-1:0] alu_op_sel_id_s;
+    wire [`kALU_BRANCH_SEL_WIDTH-1:0] alu_branch_sel_id_s;
 
     // EX
     wire [ 31:0] ex_cont_mux_out;
     wire [ 31:0] addr_adder_mux_out;
     wire [ 31:0] alu_mux_out;
     wire [ 31:0] addr_adder_out;
-    wire [  6:0] alu_ctl;
     wire         alu_branch_enable;
     wire [ 31:0] alu_result;
     wire [ 31:0] lui_mux_out;
@@ -187,10 +188,11 @@ module cpu(
 
     alu_control alu_control(
         .reset_n_i(reset_n_i),
-        .Opcode  (inst_id_s[6:0]),    // opcode
-        .FuncCode({inst_id_s[30],       // funct7[5]
-                   inst_id_s[14:12]}),  // funct3
-        .ALUCtl  (alu_ctl)
+        .opcode_i  (inst_id_s[6:0]),    // opcode
+        .funct7_bit5_i(inst_id_s[30]),// ADD / SUB
+        .funct3_i(inst_id_s[14:12]),  // funct3
+        .alu_op_sel_o  (alu_op_sel_id_s),
+        .alu_branch_sel_o  (alu_branch_sel_id_s)
     );
 
     sign_mask_gen sign_mask_gen_inst(
@@ -199,8 +201,8 @@ module cpu(
     );
     
     // ID-EX Pipeline Register
-    wire [3:0] alu_op_sel_ex_s;
-    wire [2:0] alu_branch_sel_ex_s;
+    wire [`kALU_OP_SEL_WIDTH-1:0] alu_op_sel_ex_s;
+    wire [`kALU_BRANCH_SEL_WIDTH-1:0] alu_branch_sel_ex_s;
     wire [31:0] inst_ex_s, imm_out_ex_s, reg_a_out_ex_s, reg_b_out_ex_s;
     wire [ 3:0] data_mem_sign_mask_ex_s;
     wire [31:0] ctrl_mux_out_ex_s, pc_ex_s;
@@ -214,7 +216,8 @@ module cpu(
                          inst_id_s[19:15],    // [160:156] ( 5 bits)
                          inst_id_s[11: 7],    // [155:151] ( 5 bits)
                          dataMem_sign_mask,   // [150:147] ( 4 bits)
-                         alu_ctl[6:0],        // [146:140] (32 bits)
+                         alu_branch_sel_id_s,
+                         alu_op_sel_id_s, 
                          imm_out,             // [139:108] (32 bits)
                          regB_out,            // [107: 76] (32 bits)
                          regA_out,            // [ 75: 44] (32 bits)
@@ -267,7 +270,8 @@ module cpu(
     alu alu_inst(
         .a_i(wb_fwd1_mux_out),
         .b_i(alu_mux_out),
-        .sel_i({alu_branch_sel_ex_s, alu_op_sel_ex_s}),
+        .branch_sel_i(alu_branch_sel_ex_s),
+        .op_sel_i(alu_op_sel_ex_s),
         .result_o(alu_result),
         .branch_ena_o(alu_branch_enable)
     );
