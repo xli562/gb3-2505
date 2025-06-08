@@ -1,9 +1,10 @@
 # TODO
 
-1. Write c programs such as below, to test ALU function one-by-one.
+1. Write simple asm programs to test the ~10 ALU functions one-by-one. Switch between branch alu (unstable) and perf (stable).
 
 ADD done
 SUB done
+
 
 1. Add reset logic for consistent behaviour
 
