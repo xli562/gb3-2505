@@ -17,10 +17,10 @@ module toplevel (
     wire        data_memwrite;
     wire        data_memread;
     wire [ 3:0] data_sign_mask;
-   wire       debug_s;
+	wire 		debug_s;
     wire [ 7:0] led_s;
-   reg        reset_n_s = 1'b0;
-   reg  [ 4:0] reset_counter_s = 0;
+	reg  		reset_n_s = 1'b0;
+	reg  [ 4:0] reset_counter_s = 0;
 
     `ifdef SIMULATION
         reg  clk_s;
@@ -38,12 +38,12 @@ module toplevel (
         );
     `endif
 
-   always @(posedge clk_s) begin
-      if (reset_counter_s == 5'b11111)
-         reset_n_s <= 1'b1;
-      else
-         reset_counter_s <= reset_counter_s + 1;
-   end
+	always @(posedge clk_s) begin
+		if (reset_counter_s == 5'b11111)
+			reset_n_s <= 1'b1;
+		else
+			reset_counter_s <= reset_counter_s + 1;
+	end
 
     cpu processor(
         .clk_i(clk_proc_s),
@@ -74,11 +74,11 @@ module toplevel (
             .sign_mask(data_sign_mask),
             .led(led_s),
             .clk_stall(data_clk_stall)
-   );
+	);
 
     assign clk_proc_s = (data_clk_stall) ? 1'b1 : clk_s;
-   
-   // Debugging LED config
+	
+	// Debugging LED config
     assign led_o = led_s;
-   // assign led_o[0] = debug_s;
+	// assign led_o[0] = debug_s;
 endmodule

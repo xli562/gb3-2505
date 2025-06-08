@@ -145,7 +145,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 
     assign read_buf = (select2) ? out6 : out5;
 
-   // Load hex file, raise error if file not found.
+	// Load hex file, raise error if file not found.
     // integer fh;
     initial begin
         // // try to open it for reading
@@ -162,22 +162,22 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
         //     // file exists: close the probe handle and actually load it
         //     $fclose(fh);
         `ifdef SYNTHESIS
-      $readmemh("processor/verilog/data.hex", data_block);
-      `elsif SIMULATION
-      $readmemh("verilog/data.hex", data_block);
-      `else
-      $error("You must define SYNTHESIS or SIMULATION");
-      `endif
+		$readmemh("processor/verilog/data.hex", data_block);
+		`elsif SIMULATION
+		$readmemh("verilog/data.hex", data_block);
+		`else
+		$error("You must define SYNTHESIS or SIMULATION");
+		`endif
         // end
         clk_stall = 0;
     end
 
     // LED register interfacing with I/O
     always @(posedge clk) begin
-      if(memwrite == 1'b1 && addr == 32'h2000) begin
-         led_reg <= write_data;
-      end
-   end
+		if(memwrite == 1'b1 && addr == 32'h2000) begin
+			led_reg <= write_data;
+		end
+	end
 
     
 

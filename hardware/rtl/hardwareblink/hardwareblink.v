@@ -1,39 +1,39 @@
-`define   kFofE_LFOSC_CLOCK_DIVIDER_FOR_1Hz   10000
+`define	kFofE_LFOSC_CLOCK_DIVIDER_FOR_1Hz	10000
 
 module blink(led);
-   output      led;
+	output		led;
 
-   wire      clk;
-   reg      LEDstatus = 1;
-   reg [31:0]   count = 0;
+	wire		clk;
+	reg		LEDstatus = 1;
+	reg [31:0]	count = 0;
 
-   /*
-    *   Creates a 48MHz clock signal from
-    *   internal oscillator of the iCE40
-    */
-   SB_LFOSC OSCInst0 (
-      .CLKLFPU(1'b1),
-      .CLKLFEN(1'b1),
-      .CLKLF(clk)
-   );
+	/*
+	 *	Creates a 48MHz clock signal from
+	 *	internal oscillator of the iCE40
+	 */
+	SB_LFOSC OSCInst0 (
+		.CLKLFPU(1'b1),
+		.CLKLFEN(1'b1),
+		.CLKLF(clk)
+	);
 
-   // defparam OSCInst0.CLKLF_DIV = "0b01";
-   /*
-    *   Blinks LED at approximately 1Hz. The constant kFofE_CLOCK_DIVIDER_FOR_1Hz
-    *   (defined above) is calibrated to yield a blink rate of about 1Hz.
-    */
-   always @(posedge clk) begin
-      if (count > `kFofE_LFOSC_CLOCK_DIVIDER_FOR_1Hz) begin
-         LEDstatus <= !LEDstatus;
-         count <= 0;
-      end
-      else begin
-         count <= count + 1;
-      end
-   end
+	// defparam OSCInst0.CLKLF_DIV = "0b01";
+	/*
+	 *	Blinks LED at approximately 1Hz. The constant kFofE_CLOCK_DIVIDER_FOR_1Hz
+	 *	(defined above) is calibrated to yield a blink rate of about 1Hz.
+	 */
+	always @(posedge clk) begin
+		if (count > `kFofE_LFOSC_CLOCK_DIVIDER_FOR_1Hz) begin
+			LEDstatus <= !LEDstatus;
+			count <= 0;
+		end
+		else begin
+			count <= count + 1;
+		end
+	end
 
-   /*
-    *   Assign output led to value in LEDstatus register
-    */
-   assign   led = LEDstatus;
+	/*
+	 *	Assign output led to value in LEDstatus register
+	 */
+	assign	led = LEDstatus;
 endmodule

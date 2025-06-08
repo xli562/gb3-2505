@@ -24,35 +24,35 @@ module alu(
     always @(op_sel_i, a_i, b_i) begin
         case (op_sel_i)
             // ADD (the fields also match AUIPC, all loads, all stores, and ADDI)
-            `kSAIL_ALUCTL_ADD:   result_o = a_i + b_i;
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:   result_o = a_i + b_i;
             // SUBTRACT (the fields also matches all branches)
-            `kSAIL_ALUCTL_SUB:   result_o = a_i - b_i;
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:   result_o = a_i - b_i;
             // AND (the fields also match ANDI and LUI)
-            `kSAIL_ALUCTL_AND:   result_o = a_i & b_i;
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND:   result_o = a_i & b_i;
             // OR (the fields also match ORI)
-            `kSAIL_ALUCTL_OR:    result_o = a_i | b_i;
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_OR:    result_o = a_i | b_i;
             // XOR (the fields also match other XOR variants)
-            `kSAIL_ALUCTL_XOR:   result_o = a_i ^ b_i;
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:   result_o = a_i ^ b_i;
             // SLL (the fields also match the other SLL variants)
-            `kSAIL_ALUCTL_SLL:   result_o = a_i << b_i[4:0];
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLL:   result_o = a_i << b_i[4:0];
             // SRL (the fields also matches the other SRL variants)
-            `kSAIL_ALUCTL_SRL:   result_o = a_i >> b_i[4:0];
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRL:   result_o = a_i >> b_i[4:0];
             // SRA (the fields also matches the other SRA variants)
-            `kSAIL_ALUCTL_SRA:   result_o = $signed(a_i) >>> b_i[4:0];
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRA:   result_o = $signed(a_i) >>> b_i[4:0];
             // SLT (the fields also matches all the other SLT variants)
-            `kSAIL_ALUCTL_SLT:   result_o = $signed(a_i) < $signed(b_i) ? 32'b1 : 32'b0;
-            default:             result_o = '0;
+            `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:   result_o = $signed(a_i) < $signed(b_i) ? 32'b1 : 32'b0;
+            default:                    				result_o = '0;
         endcase
     end
 
     always @(branch_sel_i, result_o, a_i, b_i) begin
         case (branch_sel_i)
-            `kSAIL_ALUCTL_BEQ:  branch_ena_o = (result_o == 0);
-            `kSAIL_ALUCTL_BNE:  branch_ena_o = !(result_o == 0);
-            `kSAIL_ALUCTL_BLT:  branch_ena_o = ($signed(a_i) < $signed(b_i));
-            `kSAIL_ALUCTL_BGE:  branch_ena_o = ($signed(a_i) >= $signed(b_i));
-            `kSAIL_ALUCTL_BLTU: branch_ena_o = ($unsigned(a_i) < $unsigned(b_i));
-            `kSAIL_ALUCTL_BGEU: branch_ena_o = ($unsigned(a_i) >= $unsigned(b_i));
+            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ:  branch_ena_o = (result_o == 0);
+            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE:  branch_ena_o = !(result_o == 0);
+            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:  branch_ena_o = ($signed(a_i) < $signed(b_i));
+            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:  branch_ena_o = ($signed(a_i) >= $signed(b_i));
+            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU: branch_ena_o = ($unsigned(a_i) < $unsigned(b_i));
+            `kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU: branch_ena_o = ($unsigned(a_i) >= $unsigned(b_i));
             default:                                   branch_ena_o = 1'b0;
         endcase
     end
