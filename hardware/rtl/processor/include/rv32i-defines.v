@@ -1,6 +1,8 @@
 `define kCYCLE_COUNTER_WIDTH				42	// Enough for several hours @ 48MHz clk
 `define kINST_MEM_SIZE                      16'h1000    // Modify linker script to e.g. `. = {kINST_MEM_SIZE};`
 `define kDATA_MEM_SIZE                      16'h0400
+`define kALU_OP_SEL_WIDTH                   4
+`define kALU_BRANCH_SEL_WIDTH               3
 
 /*
  *	7-bit RISC-V opcode field
@@ -102,6 +104,17 @@
 `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_OR			4'b0001
 `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND			4'b0000
 `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ILLEGAL		4'b1111
+
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD         9'b000000001
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB         9'b000000010
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND         9'b000000100
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_OR          9'b000001000
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR         9'b000010000
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLL         9'b000100000
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRL         9'b001000000
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRA         9'b010000000
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT         9'b100000000
+// `define kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ILLEGAL     9'b000000000
 
 
 

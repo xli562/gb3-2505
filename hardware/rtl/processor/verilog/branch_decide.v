@@ -3,7 +3,7 @@
 `include "../include/rv32i-defines.v"
 
 /*
- * Implements branch resolution, located in MEM stage
+ * Implements branch resolution, located in MA stage
  */
 
 module branch_decide (

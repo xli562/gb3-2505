@@ -34,7 +34,7 @@ int main(void) {
     b = a + c;          // ADD; create dependancy
     c = i ^ b;
     b = a << 3;         // SLLI
-    c = i & (a & 0b1111) | 0b10;
+    c = (i & (a & 0b1111)) | 0b10;
     b = b >> a;         // SRA
     b = b - 5000;
     b = b >> 2;         // SRAI

@@ -56,11 +56,11 @@ endmodule
 //     parameter TABLE_BITS = 7
 // ) (
 //     input             clk_i,
-//     // actual outcome (from MEM stage)
+//     // actual outcome (from MA stage)
 //     input             actual_branch_decision,
 //     // high in ID stage for any branch-decode
 //     input             branch_decode_sig,
-//     // high in MEM stage when a branch retires
+//     // high in MA stage when a branch retires
 //     input             branch_mem_sig,
 //     // PC of the branch (from IF/ID) and its immediate
 //     input  [31:0]     in_addr,

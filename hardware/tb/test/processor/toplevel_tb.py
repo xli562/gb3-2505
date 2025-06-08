@@ -86,6 +86,7 @@ async def test_ck_cycles(dut):
     clock = Clock(dut.clk_s, ck_period_ns, units='ns')
     cocotb.start_soon(clock.start())
 
+    color_log(dut, f'Expted start cycle = 58')
     start_cycle = 0
     for cycle in tqdm(range(300000)):
         await RisingEdge(dut.clk_s)
