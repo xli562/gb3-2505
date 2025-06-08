@@ -29,8 +29,8 @@ module alu(
         : 32'b0;
     wire [31:0] slt_s = op_sel_i[8] ? (signed_a_s < signed_b_s ? 32'b1 : 32'b0) : 32'b0;
     
-    assign result_o = add_s | sub_s | and_s | or_s  |
-                      xor_s | sll_s | srl_s | sra_s | slt_s;
+    assign result_o = add_s ^ sub_s ^ and_s ^ or_s  ^
+                      xor_s ^ sll_s ^ srl_s ^ sra_s ^ slt_s;
 
     wire beq_s  = branch_sel_i[0] ? ( a_i ==  b_i) : 1'b0;
     wire bne_s  = branch_sel_i[1] ? ( a_i !=  b_i) : 1'b0;
@@ -38,7 +38,7 @@ module alu(
     wire bge_s  = branch_sel_i[3] ? (signed_a_s >=  signed_b_s) : 1'b0;
     wire bltu_s = branch_sel_i[4] ? ( a_i <  b_i) : 1'b0;
     wire bgeu_s = branch_sel_i[5] ? ( a_i >=  b_i) : 1'b0;
-    assign branch_ena_o = beq_s | bne_s | blt_s | bge_s | bltu_s | bgeu_s;
+    assign branch_ena_o = beq_s ^ bne_s ^ blt_s ^ bge_s ^ bltu_s ^ bgeu_s;
 endmodule
 
 

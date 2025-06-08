@@ -2,10 +2,6 @@
 `timescale 1ns / 1ps
 `include "../include/rv32i-defines.v"
 
-
-
-//Data cache
-
 module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data, led, clk_stall);
     input               clk;
     input       [31:0]  addr;
