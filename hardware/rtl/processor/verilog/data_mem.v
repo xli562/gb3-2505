@@ -75,6 +75,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	reg				prev_memwrite;
 	reg				prev_memread;
 	reg [3:0]		prev_sign_mask;
+	wire 			enable;
 
 	/*
 	 *	Line buffer
@@ -243,7 +244,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 		end
 	end
 
-	always @(negedge clk) begin
+	always @(posedge clk) begin
 		prev_addr <= addr;
 		prev_write_data <= write_data;
 		prev_memwrite <= memwrite;
@@ -254,8 +255,10 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	/*
 	 *	State machine
 	 */
+	assign enable = (prev_addr != addr) || (prev_write_data != write_data) || (prev_memwrite != memwrite) || (prev_memread != memread) || (prev_sign_mask != sign_mask);
+
 	always @(posedge clk) begin
-		if(!(addr == prev_addr && write_data == prev_write_data && memwrite == prev_memwrite && memread == prev_memread && sign_mask == prev_sign_mask)) begin
+		if(enable) begin
 			case (state)
 				IDLE: begin
 					clk_stall <= 0;
