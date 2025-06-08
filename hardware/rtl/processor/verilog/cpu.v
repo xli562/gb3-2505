@@ -14,7 +14,7 @@ module cpu(
     output [31:0] data_mem_WrData,
     output        data_mem_memwrite,
     output        data_mem_memread,
-    output [ 3:0] data_mem_sign_mask,
+    output [ 2:0] data_mem_sign_mask,
     // Debug signal
     output        debug_o
 );
@@ -44,7 +44,7 @@ module cpu(
     wire [ 31:0] regA_out;
     wire [ 31:0] regB_out;
     wire [ 31:0] imm_out;
-    wire [  3:0] dataMem_sign_mask;
+    wire [  2:0] dataMem_sign_mask;
 
     // EX
     wire [ 31:0] ex_cont_mux_out;
@@ -181,7 +181,7 @@ module cpu(
     );
 
     imm_gen immediate_generator(
-        .inst(inst_id_s),
+        .inst(inst_id_s[28:0]),
         .imm (imm_out)
     );
 
@@ -202,18 +202,18 @@ module cpu(
     wire [3:0] alu_op_sel_ex_s;
     wire [2:0] alu_branch_sel_ex_s;
     wire [31:0] inst_ex_s, imm_out_ex_s, reg_a_out_ex_s, reg_b_out_ex_s;
-    wire [ 3:0] data_mem_sign_mask_ex_s;
+    wire [ 2:0] data_mem_sign_mask_ex_s;
     wire [31:0] ctrl_mux_out_ex_s, pc_ex_s;
     wire predict_ex_s;
     dff #(
-        .WIDTH(173)
+        .WIDTH(172)
     ) id_ex_reg (
         .clk_i         (clk_i),
         .reset_n_i     (reset_n_i),
         .data_i        ({inst_id_s[31:20],    // [177:166] (11 bits)
                          inst_id_s[19:15],    // [160:156] ( 5 bits)
                          inst_id_s[11: 7],    // [155:151] ( 5 bits)
-                         dataMem_sign_mask,   // [150:147] ( 4 bits)
+                         dataMem_sign_mask,             // [147]     ( 1 bit )
                          alu_ctl[6:0],        // [146:140] (32 bits)
                          imm_out,             // [139:108] (32 bits)
                          regB_out,            // [107: 76] (32 bits)

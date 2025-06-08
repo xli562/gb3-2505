@@ -16,7 +16,7 @@ module toplevel (
     wire [31:0] data_WrData;
     wire        data_memwrite;
     wire        data_memread;
-    wire [ 3:0] data_sign_mask;
+    wire [ 2:0] data_sign_mask;
 	wire 		debug_s;
     wire [ 7:0] led_s;
 	reg  		reset_n_s = 1'b0;

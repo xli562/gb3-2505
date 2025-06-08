@@ -2,12 +2,13 @@
 `timescale 1ns / 1ps
 `include "../include/rv32i-defines.v"
 
-
-module adder (
+module subtractor (
     input [31:0] input1,
     input [31:0] input2,
     output [31:0] out
 );
+	wire CO_internal;
+
     SB_MAC16 i_sbmac16 (
         .A(input1[31:16]),
         .B(input1[15:0]),
@@ -28,8 +29,8 @@ module adder (
 		.OHOLDBOT(1'b0),
 		.OLOADTOP(1'b0),
 		.OLOADBOT(1'b0),
-		.ADDSUBTOP(1'b0),
-		.ADDSUBBOT(1'b0),
+		.ADDSUBTOP(1'b1),
+		.ADDSUBBOT(1'b1),
 		.CO(),
 		.CI(1'b0),
 		.ACCUMCI(),

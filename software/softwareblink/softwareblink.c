@@ -16,20 +16,18 @@ int main(void)
 	volatile unsigned int *gDebugLedsMemoryMappedRegister = (unsigned int *)0x2000;
 	while (1)
 	{
-		*gDebugLedsMemoryMappedRegister = 0b10000000;
+		*gDebugLedsMemoryMappedRegister = 0x00;
 
 		/*
 		 *	Spin
 		 */
-		for (int j = 0; j < kSpinDelay; j++)
-			;
+		for (int j = 0; j < kSpinDelay; j++);
 
-		*gDebugLedsMemoryMappedRegister = 0b00000001;
+		*gDebugLedsMemoryMappedRegister = 0xFF;
 
 		/*
 		 *	Spin
 		 */
-		for (int j = 0; j < kSpinDelay; j++)
-			;
+		for (int j = 0; j < kSpinDelay; j++);
 	}
 }

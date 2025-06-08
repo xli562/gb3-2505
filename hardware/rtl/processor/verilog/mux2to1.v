@@ -11,3 +11,28 @@ module mux2to1(
 );
     assign out = (select) ? input1 : input0;
 endmodule
+
+module mux2to1_five_bit(input0, input1, select, out);
+	input [4:0]	input0, input1;
+	input		select;
+	output [4:0]	out;
+
+	assign out = (select) ? input1 : input0;
+endmodule
+
+module mux2to1_nine_bit(input0, input1, select, out);
+	input [8:0]	input0, input1;
+	input		select;
+	output [8:0]	out;
+
+	assign out = (select) ? input1 : input0;
+endmodule
+
+
+module mux2to1_eleven_bit(input0, input1, select, out);
+	input [10:0]	input0, input1;
+	input		select;
+	output [10:0]	out;
+
+	assign out = (select) ? input1 : input0;
+endmodule
