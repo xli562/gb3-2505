@@ -20,6 +20,7 @@
 scratch/
 scratch/**
 scratch/output.txt
+data/
 TODO.md
 
 # Testbench outputs
@@ -40,5 +41,6 @@ TODO.md
 **/*.i
 **/*.sr
 **/*.map
+**/*.sym
 **/stats.txt
 hardware/tb/mods/__pycache__/logging_mods.cpython-310.pyc
