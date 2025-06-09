@@ -23,6 +23,8 @@ module toplevel (
         );
     `endif
         
+    wire        clk_proc_s;
+    wire        data_clk_stall;
     reg         reset_n_s = 1'b0;
     reg  [ 4:0] reset_counter_s = 0;
     wire [31:0] inst_addr_s;
@@ -44,7 +46,7 @@ module toplevel (
     end
 
     cpu processor(
-        .clk_i               (clk_s),
+        .clk_i               (clk_proc_s),
         .reset_n_i           (reset_n_s),
         .inst_mem_addr_o     (inst_addr_s),
         .inst_i              (inst_s),
@@ -70,9 +72,12 @@ module toplevel (
             .r_ena_i    (data_r_ena_s),
             .r_data_o   (data_out),
             .sign_mask_i(data_sign_mask_s),
-            .led_o      (led_s)
+            .led_o      (led_s),
+            .clk_stall_o(data_clk_stall)
     );
 
+    assign clk_proc_s = (data_clk_stall) ? 1'b1 : clk_s;
+    
     // Debugging LED config
     assign led_o = led_s;
     // assign led_o[0] = debug_s;
