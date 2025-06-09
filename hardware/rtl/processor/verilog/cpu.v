@@ -14,7 +14,7 @@ module cpu(
     output [31:0] data_mem_data_o,
     output        data_mem_w_ena_o,
     output        data_mem_r_ena_o,
-    output [ 3:0] data_mem_sign_mask_o,
+    output [ 2:0] data_mem_sign_mask_o,
     // Debug signal
     output        debug_o
 );
@@ -44,7 +44,7 @@ module cpu(
     wire [ 31:0] regA_out;
     wire [ 31:0] regB_out;
     wire [ 31:0] imm_out;
-    wire [  3:0] dataMem_sign_mask;
+    wire [  2:0] data_mem_sign_mask;
     wire [`kALU_OP_SEL_WIDTH-1:0] alu_op_sel_id_s;
     wire [`kALU_BRANCH_SEL_WIDTH-1:0] alu_branch_sel_id_s;
 
@@ -89,14 +89,14 @@ module cpu(
     // IF stage
     mux2to1 #(
         .WIDTH(32)
-    ) pc_mux(
+    ) pc_mux (
         .input0(pc_mux0),
         .input1(addr_adder_out_ma_s),
         .select(pcsrc),
         .out   (pc_in)
     );
 
-    adder pc_adder(
+    adder pc_adder (
         .input1(32'b100),
         .input2(pc_out),
         .out   (pc_adder_out)
@@ -143,7 +143,7 @@ module cpu(
                           pc_id_s})
     );
 
-    control_unit control_unit_inst(
+    control_unit control_unit_inst (
         .opcode  (inst_id_s[6:0]),    // Opcode field in instruction
         .MemtoReg(mem_to_reg_inst_id_s),
         .RegWrite(w_reg_inst_id_s),
@@ -176,7 +176,7 @@ module cpu(
         .out   (id_cont_mux_out)
     );
 
-    regfile register_files(
+    regfile register_files (
         .clk      (clk_i),
         .write    (w_reg_inst_ma_s),
         .wrAddr   (inst_ma_s[11:7]),
@@ -187,12 +187,12 @@ module cpu(
         .rdDataB  (regB_out)
     );
 
-    imm_gen immediate_generator(
+    imm_gen immediate_generator (
         .inst(inst_id_s),
         .imm (imm_out)
     );
 
-    alu_control alu_control(
+    alu_control alu_control (
         .reset_n_i       (reset_n_i),
         .opcode_i        (inst_id_s[6:0]),
         .funct7_bit5_i   (inst_id_s[30]),      // ADD / SUB
@@ -201,30 +201,30 @@ module cpu(
         .alu_branch_sel_o(alu_branch_sel_id_s)
     );
 
-    sign_mask_gen sign_mask_gen_inst(
-        .func3    (inst_id_s[14:12]),
-        .sign_mask(dataMem_sign_mask)
+    sign_mask_gen sign_mask_gen_inst (
+        .funct3   (inst_id_s[14:12]),
+        .sign_mask(data_mem_sign_mask)
     );
     
     // ID-EX Pipeline Register
     wire [`kALU_OP_SEL_WIDTH-1:0] alu_op_sel_ex_s;
     wire [`kALU_BRANCH_SEL_WIDTH-1:0] alu_branch_sel_ex_s;
     wire [31:0] inst_ex_s, imm_out_ex_s, reg_a_out_ex_s, reg_b_out_ex_s;
-    wire [ 3:0] data_mem_sign_mask_o_ex_s;
+    wire [ 2:0] data_mem_sign_mask_o_ex_s;
     wire [31:0] pc_ex_s;
     wire predict_ex_s;
     wire jump_inst_ex_s, mem_to_reg_inst_ex_s, w_reg_inst_ex_s;
     wire w_mem_inst_ex_s, r_mem_inst_ex_s, branch_inst_ex_s;
     wire auipc_inst_ex_s, lui_inst_ex_s, alusrc_inst_ex_s, jalr_inst_ex_s;
     dff #(
-        .WIDTH(180)
+        .WIDTH(179)
     ) id_ex_reg (
         .clk_i         (clk_i),
         .reset_n_i     (reset_n_i),
         .data_i        ({inst_id_s[31:20],    // [177:166] (11 bits)
                          inst_id_s[19:15],    // [160:156] ( 5 bits)
                          inst_id_s[11: 7],    // [155:151] ( 5 bits)
-                         dataMem_sign_mask,   // [150:147] ( 4 bits)
+                         data_mem_sign_mask,   // [150:147] ( 4 bits)
                          alu_branch_sel_id_s,
                          alu_op_sel_id_s, 
                          imm_out,             // [139:108] (32 bits)
@@ -283,7 +283,7 @@ module cpu(
         .out   (addr_adder_mux_out)
     );
 
-    adder addr_adder(
+    adder addr_adder (
         .input1(addr_adder_mux_out),
         .input2(imm_out_ex_s),
         .out   (addr_adder_out)
@@ -298,7 +298,7 @@ module cpu(
         .out   (alu_mux_out)
     );
 
-    alu alu_inst(
+    alu alu_inst (
         .a_i(wb_fwd1_mux_out),
         .b_i(alu_mux_out),
         .branch_sel_i(alu_branch_sel_ex_s),
@@ -370,25 +370,23 @@ module cpu(
 
     // MA-WB Pipeline Register
     wire [31:0] inst_wb_s, auipc_mux_out_wb_s;
-    wire [31:0] data_mem_data_i_wb_s, lui_mux_out_wb_s;
+    wire [31:0] data_mem_data_i_wb_s;
     wire mem_to_reg_inst_wb_s, w_reg_inst_wb_s;
     dff #(
-        .WIDTH(115)
+        .WIDTH(83)
     ) ma_wb_reg (
         .clk_i         (clk_i),
         .reset_n_i     (reset_n_i),
-        .data_i        ({inst_ma_s[31:20], // [116:105] (12 bits)
-                         inst_ma_s[11:7], // [104:100] ( 5 bits)
-                         data_mem_data_i,        // [ 99: 68] (32 bits)
-                         auipc_mux_out,       // [ 67: 36] (32 bits)
-                         lui_mux_out_ma_s,  // [ 35:  4] (32 bits)
+        .data_i        ({inst_ma_s[31:20],
+                         inst_ma_s[11:7],
+                         data_mem_data_i,
+                         auipc_mux_out,
                          w_reg_inst_ma_s,
-                         mem_to_reg_inst_ma_s}),   // [  3:  0] ( 4 bits)
+                         mem_to_reg_inst_ma_s}),
         .delayed_data_o({inst_wb_s[31:20],
                          inst_wb_s[11:7],
                          data_mem_data_i_wb_s,
                          auipc_mux_out_wb_s,
-                         lui_mux_out_wb_s,
                          w_reg_inst_wb_s,
                          mem_to_reg_inst_wb_s})
     );
@@ -412,16 +410,16 @@ module cpu(
     );
 
     forwarding_unit forwarding_unit (
-        .rs1             (inst_ex_s[19:15]),
-        .rs2             (inst_ex_s[24:20]),
+        .rs1            (inst_ex_s[19:15]),
+        .rs2            (inst_ex_s[24:20]),
         .MA_RegWriteAddr(inst_ma_s[11:7]),
-        .WB_RegWriteAddr (inst_wb_s[11:7]),
+        .WB_RegWriteAddr(inst_wb_s[11:7]),
         .MA_RegWrite    (w_reg_inst_ma_s),
-        .WB_RegWrite     (w_reg_inst_wb_s),
+        .WB_RegWrite    (w_reg_inst_wb_s),
         .MA_fwd1        (mfwd1),
         .MA_fwd2        (mfwd2),
-        .WB_fwd1         (wfwd1),
-        .WB_fwd2         (wfwd2)
+        .WB_fwd1        (wfwd1),
+        .WB_fwd2        (wfwd2)
     );
 
     mux2to1 #(
@@ -502,7 +500,7 @@ module cpu(
     // Copy of WB mux, but in MA stage. Move back and cleanup
     mux2to1 #(
         .WIDTH(32)
-    ) mem_regwb_mux(
+    ) mem_regwb_mux (
         .input0(auipc_mux_out),
         .input1(data_mem_data_i),
         .select(mem_to_reg_inst_ma_s),

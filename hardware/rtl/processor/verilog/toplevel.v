@@ -34,7 +34,7 @@ module toplevel (
     wire [31:0] w_data_s;
     wire        data_w_ena_s;
     wire        data_r_ena_s;
-    wire [ 3:0] data_sign_mask_s;
+    wire [ 2:0] data_sign_mask_s;
     wire        debug_s;
     wire [ 7:0] led_s;
 

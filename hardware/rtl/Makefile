@@ -5,7 +5,7 @@ DESIGN	= sail
 
 # Acquire the sw directory from command line
 ifndef hw
-$(error Error: hw undefined; use `make hw=<some_hardware> <options>`)
+hw = processor
 endif
 ifeq ($(wildcard $(hw)/),)
 $(error Error: hw ("$(hw)") is not a subdirectory of $(CURDIR))
