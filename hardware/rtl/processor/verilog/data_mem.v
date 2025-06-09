@@ -127,7 +127,7 @@ module data_mem (
     end
 
     always @(posedge clk_i) begin
-        if(w_ena_i == 1'b1 && addr_i == 32'h2000) begin
+        if(w_ena_i == 1'b1 && {addr_i[31], addr_i[13]} == 2'b01) begin
             led_reg <= w_data_i;
         end
     end
