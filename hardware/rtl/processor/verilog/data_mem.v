@@ -15,6 +15,7 @@ module data_mem (
 );
     // State
     integer state = 0;
+    integer next_state;
     parameter IDLE = 0;
     parameter READ_BUFFER = 1;
     parameter READ = 2;
@@ -51,8 +52,29 @@ module data_mem (
         end
     end
 
+    always @* begin
+        // Default assignments
+        next_state = state;
+        case (state)
+            IDLE: begin
+                if (w_ena_i | r_ena_i) next_state = READ_BUFFER;
+            end
+            READ_BUFFER: begin
+                if (r_ena_buf) next_state = READ;
+                if (w_ena_buf) next_state = WRITE;
+            end
+            READ: begin
+                next_state = IDLE;
+            end
+            WRITE: begin
+                next_state = IDLE;
+            end
+        endcase
+    end
+
     // State machine
     always @(posedge clk_i) begin
+        state <= next_state;
         case (state)
             IDLE: begin
                 clk_stall_o   <= 1'b0;
@@ -62,8 +84,7 @@ module data_mem (
                 addr_buf      <= addr_i;
                 sign_mask_buf <= sign_mask_i;
 
-                if (w_ena_i | r_ena_i) begin
-                    state <= READ_BUFFER;
+                if (next_state == READ_BUFFER) begin
                     clk_stall_o <= 1'b1;
                 end
             end
@@ -71,19 +92,11 @@ module data_mem (
             READ_BUFFER: begin
                 // Subtract out the size of the instruction memory.
                 word_buf <= data_block[addr_buf_block_addr_s - 1024];
-
-                if(r_ena_buf==1'b1) begin
-                    state <= READ;
-                end
-                else if(w_ena_buf == 1'b1) begin
-                    state <= WRITE;
-                end
             end
 
             READ: begin
                 clk_stall_o <= 0;
                 r_data_o <= read_buf;
-                state <= IDLE;
             end
 
             WRITE: begin
@@ -91,7 +104,6 @@ module data_mem (
 
                 // Subtract out the size of the instruction memory.
                 data_block[addr_buf_block_addr_s - 1024] <= replacement_word_s;
-                state <= IDLE;
             end
         endcase
     end
