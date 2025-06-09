@@ -27,20 +27,20 @@ module cpu(
     wire [ 31:0] fence_mux_out;
 
     // Control signals
-    wire         MemtoReg1;
-    wire         RegWrite1;
-    wire         MemWrite1;
-    wire         MemRead1;
-    wire         branch1;
-    wire         jump1;
-    wire         Jalr1;
-    wire         ALUSrc1;
-    wire         Lui1;
-    wire         Auipc1;
-    wire         Fence_signal;
+    wire         mem_to_reg_inst_id_s;
+    wire         w_reg_inst_id_s;
+    wire         w_mem_inst_id_s;
+    wire         r_mem_inst_id_s;
+    wire         branch_inst_id_s;
+    wire         jump_inst_id_s;
+    wire         jalr_inst_id_s;
+    wire         alusrc_inst_id_s;
+    wire         lui_inst_id_s;
+    wire         auipc_inst_id_s;
+    wire         fence_inst_id_s;
 
     // ID
-    wire [ 31:0] cont_mux_out; //control signal mux
+    wire [  9:0] id_cont_mux_out; //control signal mux
     wire [ 31:0] regA_out;
     wire [ 31:0] regB_out;
     wire [ 31:0] imm_out;
@@ -49,7 +49,7 @@ module cpu(
     wire [`kALU_BRANCH_SEL_WIDTH-1:0] alu_branch_sel_id_s;
 
     // EX
-    wire [ 31:0] ex_cont_mux_out;
+    wire [  7:0] ex_cont_mux_out;
     wire [ 31:0] addr_adder_mux_out;
     wire [ 31:0] alu_mux_out;
     wire [ 31:0] addr_adder_out;
@@ -87,7 +87,9 @@ module cpu(
 
     // Pipeline begins
     // IF stage
-    mux2to1 pc_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) pc_mux(
         .input0(pc_mux0),
         .input1(addr_adder_out_ma_s),
         .select(pcsrc),
@@ -109,17 +111,21 @@ module cpu(
         .delayed_data_o(pc_out)
     );
 
-    mux2to1 inst_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) inst_mux (
         .input0(inst_i),
         .input1(32'b0),
         .select(inst_mux_sel),
         .out   (inst_mux_out)
     );
 
-    mux2to1 fence_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) fence_mux (
         .input0(pc_adder_out),
         .input1(pc_out),
-        .select(Fence_signal),
+        .select(fence_inst_id_s),
         .out   (fence_mux_out)
     );
 
@@ -139,40 +145,40 @@ module cpu(
 
     control_unit control_unit_inst(
         .opcode  (inst_id_s[6:0]),    // Opcode field in instruction
-        .MemtoReg(MemtoReg1),
-        .RegWrite(RegWrite1),
-        .MemWrite(MemWrite1),
-        .MemRead (MemRead1),
-        .branch  (branch1),
-        .ALUSrc  (ALUSrc1),
-        .jump    (jump1),
-        .Jalr    (Jalr1),
-        .Lui     (Lui1),
-        .Auipc   (Auipc1),
-        .Fence   (Fence_signal)
+        .MemtoReg(mem_to_reg_inst_id_s),
+        .RegWrite(w_reg_inst_id_s),
+        .MemWrite(w_mem_inst_id_s),
+        .MemRead (r_mem_inst_id_s),
+        .branch  (branch_inst_id_s),
+        .ALUSrc  (alusrc_inst_id_s),
+        .jump    (jump_inst_id_s),
+        .Jalr    (jalr_inst_id_s),
+        .Lui     (lui_inst_id_s),
+        .Auipc   (auipc_inst_id_s),
+        .Fence   (fence_inst_id_s)
     );
 
-    mux2to1 cont_mux(
-        .input0({21'b0,
-                Jalr1,
-                ALUSrc1,
-                Lui1,
-                Auipc1,
-                branch1,
-                MemRead1,
-                MemWrite1,
-                1'b0,
-                RegWrite1,
-                MemtoReg1,
-                jump1}),
-        .input1(32'b0),
+    mux2to1 #(
+        .WIDTH(10)
+    ) id_cont_mux (
+        .input0({jalr_inst_id_s,
+                alusrc_inst_id_s,
+                lui_inst_id_s,
+                auipc_inst_id_s,
+                branch_inst_id_s,
+                r_mem_inst_id_s,
+                w_mem_inst_id_s,
+                w_reg_inst_id_s,
+                mem_to_reg_inst_id_s,
+                jump_inst_id_s}),
+        .input1(10'b0),
         .select(decode_ctrl_mux_sel),
-        .out   (cont_mux_out)
+        .out   (id_cont_mux_out)
     );
 
     regfile register_files(
         .clk      (clk_i),
-        .write(ex_cont_mux_out_ma_s[2]),
+        .write    (w_reg_inst_ma_s),
         .wrAddr   (inst_ma_s[11:7]),
         .wrData   (reg_dat_mux_out),
         .rdAddrA  (inst_mux_out[19:15]),
@@ -205,10 +211,13 @@ module cpu(
     wire [`kALU_BRANCH_SEL_WIDTH-1:0] alu_branch_sel_ex_s;
     wire [31:0] inst_ex_s, imm_out_ex_s, reg_a_out_ex_s, reg_b_out_ex_s;
     wire [ 3:0] data_mem_sign_mask_o_ex_s;
-    wire [31:0] ctrl_mux_out_ex_s, pc_ex_s;
+    wire [31:0] pc_ex_s;
     wire predict_ex_s;
+    wire jump_inst_ex_s, mem_to_reg_inst_ex_s, w_reg_inst_ex_s;
+    wire w_mem_inst_ex_s, r_mem_inst_ex_s, branch_inst_ex_s;
+    wire auipc_inst_ex_s, lui_inst_ex_s, alusrc_inst_ex_s, jalr_inst_ex_s;
     dff #(
-        .WIDTH(181)
+        .WIDTH(180)
     ) id_ex_reg (
         .clk_i         (clk_i),
         .reset_n_i     (reset_n_i),
@@ -222,9 +231,8 @@ module cpu(
                          regB_out,            // [107: 76] (32 bits)
                          regA_out,            // [ 75: 44] (32 bits)
                          pc_id_s,             // [ 43: 12] (32 bits)
-                         cont_mux_out[10:7],  // [ 11:  8] ( 4 bits)
                          predict,             // [    7  ] ( 1 bit )
-                         cont_mux_out[6:0]}), // [  6:  0] ( 7 bits)
+                         id_cont_mux_out}), // [  6:  0] ( 7 bits)
         .delayed_data_o({inst_ex_s[31:20],
                          inst_ex_s[19:15],
                          inst_ex_s[11: 7],
@@ -235,35 +243,58 @@ module cpu(
                          reg_b_out_ex_s,
                          reg_a_out_ex_s,
                          pc_ex_s,
-                         ctrl_mux_out_ex_s[10:7],
                          predict_ex_s,
-                         ctrl_mux_out_ex_s[6:0]})
+                         jalr_inst_ex_s,
+                         alusrc_inst_ex_s,
+                         lui_inst_ex_s,
+                         auipc_inst_ex_s,
+                        //  ctrl_mux_out_ex_s[10:7],
+                         branch_inst_ex_s,
+                         r_mem_inst_ex_s,
+                         w_mem_inst_ex_s,
+                         w_reg_inst_ex_s,
+                         mem_to_reg_inst_ex_s,
+                         jump_inst_ex_s})
+                        //  ctrl_mux_out_ex_s[6:0]})
     );
     
-    mux2to1 ex_cont_mux(
-        .input0({23'b0, ctrl_mux_out_ex_s[7], predict_ex_s, ctrl_mux_out_ex_s[6:0]}),   // {23'b0, cont_mux_out[10:7], predict(wire), cont_mux_out[6:0]}
-        .input1(32'b0),
+    mux2to1 #(
+        .WIDTH(8)
+    ) ex_cont_mux (
+        .input0({predict_ex_s,
+                 auipc_inst_ex_s,
+                 branch_inst_ex_s,
+                 r_mem_inst_ex_s,
+                 w_mem_inst_ex_s,
+                 w_reg_inst_ex_s,
+                 mem_to_reg_inst_ex_s,
+                 jump_inst_ex_s}),
+        .input1(8'b0),
         .select(pcsrc),
         .out   (ex_cont_mux_out)
     );
 
-    mux2to1 addr_adder_mux(
-        .input0(pc_ex_s),          // if_id_out    [31:0]
+    mux2to1 #(
+        .WIDTH(32)
+    ) addr_adder_mux (
+        .input0(pc_ex_s),
         .input1(wb_fwd1_mux_out),
-        .select(ctrl_mux_out_ex_s[10]),             // cont_mux_out [10]
+        .select(jalr_inst_ex_s),
         .out   (addr_adder_mux_out)
     );
 
     adder addr_adder(
         .input1(addr_adder_mux_out),
-        .input2(imm_out_ex_s),        // imm_out     ([31:0])
+        .input2(imm_out_ex_s),
         .out   (addr_adder_out)
     );
 
-    mux2to1 alu_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) alu_mux (
         .input0(wb_fwd2_mux_out),
-        .input1(imm_out_ex_s),        // imm_out
-        .select(ctrl_mux_out_ex_s[9]),             // cont_mux_out [9]
+        .input1(imm_out_ex_s),
+        .select(alusrc_inst_ex_s),
         .out   (alu_mux_out)
     );
 
@@ -276,10 +307,12 @@ module cpu(
         .branch_ena_o(alu_branch_enable)
     );
 
-    mux2to1 lui_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) lui_mux (
         .input0(alu_result),
         .input1(imm_out_ex_s),
-        .select(ctrl_mux_out_ex_s[8]),
+        .select(lui_inst_ex_s),
         .out   (lui_mux_out)
     );
 
@@ -287,10 +320,11 @@ module cpu(
     wire [31:0] inst_ma_s, pc_ma_s;
     wire [31:0] lui_mux_out_ma_s, addr_adder_out_ma_s;
     wire alu_branch_enable_ma_s;
-    wire [5:0] ex_cont_mux_out_ma_s;
+    wire jump_inst_ma_s, mem_to_reg_inst_ma_s, w_reg_inst_ma_s;
+    wire branch_inst_ma_s, predict_ma_s, auipc_inst_ma_s;
     dff #(
         .WIDTH(120)
-    ) ex_ma_reg(
+    ) ex_ma_reg (
         .clk_i         (clk_i),
         .reset_n_i     (reset_n_i),
         .data_i        ({inst_ex_s[31:20],     // [154:143] (12 bits)
@@ -299,7 +333,7 @@ module cpu(
                          alu_branch_enable,      // [    73 ] ( 1 bit )
                          addr_adder_out,         // [ 72: 41] (32 bits)
                          pc_ex_s,       // [ 40:  9] (32 bits)
-                         ex_cont_mux_out[8:6],
+                         ex_cont_mux_out[7:5],
                          ex_cont_mux_out[2:0]}), // [  8:  0] ( 9 bits)
         .delayed_data_o({inst_ma_s[31:20],
                          inst_ma_s[11:7],
@@ -307,34 +341,40 @@ module cpu(
                          alu_branch_enable_ma_s,
                          addr_adder_out_ma_s,
                          pc_ma_s,
-                         ex_cont_mux_out_ma_s})
-        // .delayed_data_o(ex_ma_out)
+                         predict_ma_s,
+                         auipc_inst_ma_s,
+                         branch_inst_ma_s,
+                         w_reg_inst_ma_s,
+                         mem_to_reg_inst_ma_s,
+                         jump_inst_ma_s})
     );
 
-    branch_decide branch_decide_0(
-        .branch             (ex_cont_mux_out_ma_s[3]),
-        .predicted          (ex_cont_mux_out_ma_s[4]),
+    branch_decide branch_decide_0 (
+        .branch             (branch_inst_ma_s),
+        .predicted          (predict_ma_s),
         .branch_enable      (alu_branch_enable_ma_s),
-        .jump               (ex_cont_mux_out_ma_s[0]),
+        .jump               (jump_inst_ma_s),
         .mispredict         (mistake_trigger),
         .decision           (actual_branch_decision),
         .branch_jump_trigger(pcsrc)
     );
 
-    mux2to1 auipc_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) auipc_mux (
         .input0(lui_mux_out_ma_s),
         .input1(addr_adder_out_ma_s),
-        .select(ex_cont_mux_out_ma_s[5]),
+        .select(auipc_inst_ma_s),
         .out   (auipc_mux_out)
     );
 
     // MA-WB Pipeline Register
     wire [31:0] inst_wb_s, auipc_mux_out_wb_s;
     wire [31:0] data_mem_data_i_wb_s, lui_mux_out_wb_s;
-    wire [2:0] ex_cont_mux_out_wb_s;
+    wire mem_to_reg_inst_wb_s, w_reg_inst_wb_s;
     dff #(
-        .WIDTH(116)
-    ) ma_wb_reg(
+        .WIDTH(115)
+    ) ma_wb_reg (
         .clk_i         (clk_i),
         .reset_n_i     (reset_n_i),
         .data_i        ({inst_ma_s[31:20], // [116:105] (12 bits)
@@ -342,96 +382,116 @@ module cpu(
                          data_mem_data_i,        // [ 99: 68] (32 bits)
                          auipc_mux_out,       // [ 67: 36] (32 bits)
                          lui_mux_out_ma_s,  // [ 35:  4] (32 bits)
-                         ex_cont_mux_out_ma_s[2:0]}),   // [  3:  0] ( 4 bits)
+                         w_reg_inst_ma_s,
+                         mem_to_reg_inst_ma_s}),   // [  3:  0] ( 4 bits)
         .delayed_data_o({inst_wb_s[31:20],
                          inst_wb_s[11:7],
                          data_mem_data_i_wb_s,
                          auipc_mux_out_wb_s,
                          lui_mux_out_wb_s,
-                         ex_cont_mux_out_wb_s})
+                         w_reg_inst_wb_s,
+                         mem_to_reg_inst_wb_s})
     );
 
-    mux2to1 wb_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) wb_mux (
         .input0(auipc_mux_out_wb_s),
         .input1(data_mem_data_i_wb_s),
-        .select(ex_cont_mux_out_wb_s[1]),
+        .select(mem_to_reg_inst_wb_s),
         .out   (wb_mux_out)
     );
 
-    mux2to1 reg_dat_mux( //TODO cleanup
+    mux2to1 #(
+        .WIDTH(32)
+    ) reg_dat_mux ( //TODO cleanup
         .input0(mem_regwb_mux_out),
         .input1(pc_ex_s),
-        .select(ex_cont_mux_out_ma_s[0]),
+        .select(jump_inst_ma_s),
         .out   (reg_dat_mux_out)
     );
 
-    forwarding_unit forwarding_unit(
+    forwarding_unit forwarding_unit (
         .rs1             (inst_ex_s[19:15]),
         .rs2             (inst_ex_s[24:20]),
         .MA_RegWriteAddr(inst_ma_s[11:7]),
         .WB_RegWriteAddr (inst_wb_s[11:7]),
-        .MA_RegWrite    (ex_cont_mux_out_ma_s[2]),
-        .WB_RegWrite     (ex_cont_mux_out_wb_s[2]),
+        .MA_RegWrite    (w_reg_inst_ma_s),
+        .WB_RegWrite     (w_reg_inst_wb_s),
         .MA_fwd1        (mfwd1),
         .MA_fwd2        (mfwd2),
         .WB_fwd1         (wfwd1),
         .WB_fwd2         (wfwd2)
     );
 
-    mux2to1 mem_fwd1_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) mem_fwd1_mux (
         .input0(reg_a_out_ex_s),
         .input1(dataMemOut_fwd_mux_out),
         .select(mfwd1),
         .out   (mem_fwd1_mux_out)
     );
 
-    mux2to1 mem_fwd2_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) mem_fwd2_mux (
         .input0(reg_b_out_ex_s),
         .input1(dataMemOut_fwd_mux_out),
         .select(mfwd2),
         .out   (mem_fwd2_mux_out)
     );
 
-    mux2to1 wb_fwd1_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) wb_fwd1_mux (
         .input0(mem_fwd1_mux_out),
         .input1(wb_mux_out),
         .select(wfwd1),
         .out   (wb_fwd1_mux_out)
     );
 
-    mux2to1 wb_fwd2_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) wb_fwd2_mux (
         .input0(mem_fwd2_mux_out),
         .input1(wb_mux_out),
         .select(wfwd2),
         .out   (wb_fwd2_mux_out)
     );
 
-    mux2to1 dataMemOut_fwd_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) dataMemOut_fwd_mux (
         .input0(lui_mux_out_ma_s),
         .input1(data_mem_data_i),
-        .select(ex_cont_mux_out_ma_s[1]),
+        .select(mem_to_reg_inst_ma_s),
         .out   (dataMemOut_fwd_mux_out)
     );
 
-    branch_predictor branch_predictor_FSM(
+    branch_predictor branch_predictor_FSM (
         .clk_i                 (clk_i),
         .actual_branch_decision(actual_branch_decision),
-        .branch_decode_sig     (cont_mux_out[6]),
-        .branch_mem_sig        (ex_cont_mux_out_ma_s[3]),
+        .branch_decode_sig     (id_cont_mux_out[5]),
+        .branch_mem_sig        (branch_inst_ma_s),
         .in_addr               (pc_id_s),
         .offset                (imm_out),
         .branch_addr           (branch_predictor_addr),
         .prediction            (predict)
     );
 
-    mux2to1 branch_predictor_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) branch_predictor_mux (
         .input0(fence_mux_out),
         .input1(branch_predictor_addr),
         .select(predict),
         .out   (branch_predictor_mux_out)
     );
 
-    mux2to1 mistaken_branch_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) mistaken_branch_mux (
         .input0(branch_predictor_mux_out),
         .input1(pc_ex_s),
         .select(mistake_trigger),
@@ -440,16 +500,18 @@ module cpu(
 
     wire[31:0] mem_regwb_mux_out;
     // Copy of WB mux, but in MA stage. Move back and cleanup
-    mux2to1 mem_regwb_mux(
+    mux2to1 #(
+        .WIDTH(32)
+    ) mem_regwb_mux(
         .input0(auipc_mux_out),
         .input1(data_mem_data_i),
-        .select(ex_cont_mux_out_ma_s[1]),
+        .select(mem_to_reg_inst_ma_s),
         .out   (mem_regwb_mux_out)
     );
 
     // OR gate assignments, used for flushing
     assign decode_ctrl_mux_sel = pcsrc | mistake_trigger;
-    assign inst_mux_sel = pcsrc | predict | mistake_trigger | Fence_signal;
+    assign inst_mux_sel = pcsrc | predict | mistake_trigger | fence_inst_id_s;
 
     // Instruction Memory Connections
     assign inst_mem_addr_o = pc_out;
@@ -457,7 +519,7 @@ module cpu(
     // Data Memory Connections
     assign data_mem_addr_o = lui_mux_out;
     assign data_mem_data_o = wb_fwd2_mux_out;
-    assign data_mem_w_ena_o = ex_cont_mux_out[4];
-    assign data_mem_r_ena_o = ex_cont_mux_out[5];
+    assign data_mem_w_ena_o = ex_cont_mux_out[3];
+    assign data_mem_r_ena_o = ex_cont_mux_out[4];
     assign data_mem_sign_mask_o = data_mem_sign_mask_o_ex_s;
 endmodule
