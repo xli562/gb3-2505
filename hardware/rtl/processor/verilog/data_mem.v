@@ -171,16 +171,10 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 
     // LED register interfacing with I/O
     always @(posedge clk) begin
-		if(memwrite == 1'b1 && addr == 32'h2000) begin
-			led_reg <= write_data[1:0];
-            if (write_data == 4) begin
-                `ifdef SIMULATION
-                $display("LED WRITE detected: %h at cycle %0d", write_data, tb.cycle_count);
-                $finish;
-                `endif
-            end
-		end
-	end
+        if (memwrite == 1'b1 && addr[13] == 1'b1) begin
+            led_reg <= write_data;
+        end
+    end
 
     
 
