@@ -37,7 +37,7 @@ module toplevel (
     wire [ 7:0] led_s;
 
     always @(posedge clk_s) begin
-        if (reset_counter_s == 5'b11111)
+        if (reset_counter_s <= 5'b11111)
             reset_n_s <= 1'b1;
         else
             reset_counter_s <= reset_counter_s + 1;
