@@ -6,7 +6,7 @@ This is a fork of [gb3-resources](https://github.com/f-of-e/gb3-resources), the 
 
 ALL RIGHTS RESERVED, DO NOT PLAGIARISE.
 
-It is 01:28 in the morning, so don't expect logical smoothness. But I'm trying to be helpful, as you will find out, help is very much needed for this project. Also, this part of readme is purely personal opinion. Take with a pinch of salt and spices. Use Git to see who wrote this, if interested. If you don't know how to do this with Git, you're underequipped. Learn Git. Git is important to keep things intact.
+It is 01:28 in the morning, so don't expect logical smoothness. Help is very much needed for this project. This part of readme is purely personal opinion. Use Git to see who wrote this, if interested. Learn Git. Git is important to keep things intact.
 
 Structure of the Git graph of this repo. Very messy. Most branches are unfinished attempts or drafts. The branches we used in the final competition are `perf` and `comp`. perf is faster and comp is more frugal. We made it to the Pareto frontier.
 
@@ -20,7 +20,7 @@ It is VERY important to clear some obstacles at the VERY beginning of the projec
 ### Tips
 
 - There are some bugs in the repo. All known bugs are fixed in `perf` and `comp` to the best of my knowledge. Notablly, the memory is byte-addressed, so an increment of FOUR for every 32-bit word.
-- Lots of knowledge is assumed but not posessed. Learn the important bits (eg RISC-V instructions' meaning) first, don't waste too much time on details (eg makefile grammar). Use good AI tools to help you learn!
+- Lots of knowledge is assumed but not posessed. Learn the important bits (eg RISC-V instructions' meaning: google 'cambridge riscv reference card') first, don't waste too much time on details (eg makefile grammar). Use good AI tools to help you learn!
 - Find academic papers on optimised RISC-V cores. Some have 'wow' ideas that you can implement. Remember to test if their method actually speeds things up.
 - The P&H book (*Computer Organisation, the Hardware - Software Interface*), Chapter 4, is the reason for the pitiable variable naming convention. The chapter itself, though, is highly recommended.
 - Sunflower is only used for counting instructions. Don't try to use it for anything else.
