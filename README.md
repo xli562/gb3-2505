@@ -24,7 +24,7 @@ It is VERY important to clear some obstacles at the VERY beginning of the projec
 - Find academic papers on optimised RISC-V cores. Some have 'wow' ideas that you can implement. Remember to test if their method actually speeds things up.
 - The P&H book (*Computer Organisation, the Hardware - Software Interface*), Chapter 4, is the reason for the pitiable variable naming convention. The chapter itself, though, is highly recommended.
 - Sunflower is only used for counting instructions. Don't try to use it for anything else.
-- Use robust testing. You will be SAD to realise something's probably broken by some changes earlier on, but there are a hundred changes that could potentially be the issue. Testbench code is needed, but not too much. More than 30-50% of your time should be spent writing NEW Verilog code, or you'll struggle to fill the reports' pages. Only ever merge tested changes to main.
+- Use robust testing. You will be SAD to realise something's probably broken by some changes earlier on, but there are a hundred changes that could potentially be the issue. Testbench code is needed, but not too much. More than 30-50% of your time should be spent writing NEW Verilog code, or you'll struggle to fill the reports' pages. Only ever merge *tested* changes to main.
 
 ### Other thoughts
 
